@@ -6,6 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class Grid2DTest {
+
+    @Test
+    public void no_winner() {
+        Grid grid = new Grid2D(3);
+        assertEquals(false, grid.checkWinner('x'));
+        assertEquals(false, grid.checkWinner('o'));
+    }
     @Test
     public void x_winner_line_1() {
         char[][] charGrid = {{'x','x','x'},{'0','\0','o'},{'\0','\0','o'}};
