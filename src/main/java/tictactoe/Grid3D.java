@@ -76,6 +76,31 @@ public class Grid3D implements Grid {
         return this.gridWinner;
     }
 
+
+    /**
+     * @return les lignes representant la grid
+     */
+    @Override
+    public String[] getGridAsStrings() {
+        String[] out = new String[this.size+1];
+        for(int i = 0; i < out.length;i++){
+            out[i] = "";
+        }
+        for(int z = 0; z < this.size; z++){
+            String[] out2D = this.grid[0].getGridAsStrings();
+
+            for(int i = 0; i < this.size;i++){
+                out[i+1] += (out[i+1] != "" ? "\t" : "") + out2D[i];
+            }
+        }
+        //espace a gauche et a droite du label Z =  longueur total/nombre d'element - 1 tab
+        String espace = " ".repeat(((out[1].length()/this.size)/2-1));
+        for(int i = 0; i < this.size;i++){
+            out[0] += (out[0] != "" ? "\t" : "") +espace +"("+(char)(i+65)+")"+ espace;
+        }
+        return out;
+    }
+
     /**
      * @param player joueur à verifier
      * @return true si les axes Z sont gagnante
@@ -269,5 +294,15 @@ public class Grid3D implements Grid {
         }
 
         return win;
+    }
+
+    /**
+     * Affiche la grid3D
+     */
+    @Override
+    public void display() {
+        for (String ligne: this.getGridAsStrings()) {
+            System.out.println(ligne);
+        }
     }
 }

@@ -60,6 +60,30 @@ public class Grid2D implements Grid {
     }
 
     /**
+     * @return les lignes representant la grid
+     */
+    @Override
+    public String[] getGridAsStrings() {
+        String[] out = new String[this.size];
+        //taille necessaire pour ecrire le plus grand chiffre
+        int log = (int)Math.log10(this.size*this.size)+1;
+        for(int y = 0; y < this.size; y++){
+            out[y] = "|";
+            for(int x = 0; x < this.size; x++){
+                if(this.grid[x][y] == '\0'){
+                    //Complete le nombre avec des espaces pour qu'il fasse la meme taille que le plus grand nombre
+                    out[y] += " " + String.format("%1$" + log + "s", x+y*this.size+1);
+                }
+                else{
+                    out[y] += " " + this.grid[x][y];
+                }
+            }
+            out[y] += " |";
+        }
+        return out;
+    }
+
+    /**
      * @return la taille de la grid
      */
     @Override
@@ -156,5 +180,16 @@ public class Grid2D implements Grid {
             }
         }
         return winDiag1 || winDiag2;
+    }
+
+
+    /**
+     * Affiche la grid2D
+     */
+    @Override
+    public void display() {
+        for (String ligne: this.getGridAsStrings()) {
+            System.out.println(ligne);
+        }
     }
 }

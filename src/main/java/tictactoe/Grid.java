@@ -2,7 +2,12 @@ package tictactoe;
 
 import java.util.ArrayList;
 
-public interface Grid {
+/**
+ * interface grid
+ * @author Halvick Thomas
+ * @version 1
+ */
+public interface Grid extends Displayable {
     /**
      * Verifie si le joueur 'player' a gagné
      * @param player joueur à verifier
@@ -17,4 +22,10 @@ public interface Grid {
      * @return Retourne la liste des case gagnante
      */
     public ArrayList<int[]> getWinner();
+
+    /**
+     * @return les lignes representant la grid
+     */
+    public String[] getGridAsStrings();
+
 }
