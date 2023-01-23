@@ -1,4 +1,5 @@
 package tictactoe.server;
+
 import java.net.*;
 import java.io.*;
 
@@ -9,27 +10,43 @@ public class Server{
         try {
             System.out.println("Creation of server...");
             ServerSocket server = new ServerSocket(port);
-            System.out.println("Server socket created. \nConnect yourself on " + server.getInetAddress() + ":" + server.getLocalPort());
+            System.out.println("Server socket created. \nConnect yourself on " + InetAddress.getLocalHost().getHostAddress() + ":" + server.getLocalPort());
 
             System.out.println("Waiting for client...");
             Socket client = server.accept();
             System.out.println("Connected with " + client.getInetAddress());
 
-            System.out.println("Reading client buffer");
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            System.out.println("Writing to client buffer");
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
-            System.out.println("Send 'Thomas le méchant' to client");
-            out.println("Thomas le méchant");
-            System.out.println("Sent message to client");
+            ClientBufferReader reader = new ClientBufferReader(in);
+            ClientBufferWriter writer = new ClientBufferWriter(out);
 
-            System.out.println("Closing client connection...");
-            client.close();
-            System.out.println("Client connection stopped");
+            reader.start();
+            writer.start();
+
+            reader.join();
+            writer.join();
+
+//            while (true){
+//                while(in.ready()) {}
+//                    System.out.println(in.readLine());
+//                out.println(cons.readLine());
+//            }
+
+//            while (!in.ready() && !client.isClosed()) {
+//                TimeUnit.SECONDS.sleep(2);
+//                System.out.println("Waiting..." + client.isClosed() + ", " + client.isConnected());
+//            }
+//            if (!client.isClosed())
+//                System.out.println(in.readLine());
+//
+//            System.out.println("Closing client connection...");
+//            client.close();
+//            System.out.println("Client connection stopped");
 
         } catch (Exception e){
-            System.out.println("Error on server socket creation");
+            System.out.println("Error on server socket");
         }
     }
 }

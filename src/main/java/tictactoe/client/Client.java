@@ -11,19 +11,19 @@ public class Client {
     public static void main(String[] args){
         try{
             System.out.println("Connection to local host");
-            Socket me = new Socket("127.0.0.1", port);
+            Socket me = new Socket("192.168.169.176", port);
             System.out.println("Connected");
 
-            System.out.println("Waiting 3 seconds...");
-            TimeUnit.SECONDS.sleep(3);
+            ServerBufferWriter writer = new ServerBufferWriter(me);
+            ServerBufferReader reader = new ServerBufferReader(me);
 
-            System.out.println("Reading IN buffer");
-            BufferedReader in = new BufferedReader(new InputStreamReader(me.getInputStream()));
-            //PrintStream out = new PrintStream(me.getOutputStream());
-            //out.println(50);
+            writer.start();
+            reader.start();
 
-            System.out.println("Printing IN buffer");
-            System.out.println(in.readLine());
+            writer.join();
+            reader.join();
+
+            me.close();
         } catch (Exception e) {
             System.out.println("Error on connection to server");
         }
