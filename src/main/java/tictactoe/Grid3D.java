@@ -2,12 +2,32 @@ package tictactoe;
 
 import java.util.ArrayList;
 
+/**
+ * Classe de grid3D
+ * @author Halvick Thomas
+ * @version 1
+ */
 public class Grid3D implements Grid {
+
+    /**
+     * Tableau d'axe Z de Grille2D
+     */
     private Grid2D[] grid;
+
+    /**
+     * Liste des coups gagnant
+     */
     private ArrayList<int[]> gridWinner;
+
+    /**
+     * Taille de la grille
+     */
     private int size;
 
 
+    /**
+     * @param size Taille de la grille
+     */
     public Grid3D(int size) {
         this.size = size;
         this.grid = new Grid2D[size];
@@ -17,6 +37,9 @@ public class Grid3D implements Grid {
         this.gridWinner = new ArrayList();
     }
 
+    /**
+     * @param grid grille a copier
+     */
     public Grid3D(char[][][] grid) {
         this.size = grid.length;
         this.grid = new Grid2D[this.size];
@@ -26,21 +49,37 @@ public class Grid3D implements Grid {
         this.gridWinner = new ArrayList();
     }
 
+
+    /**
+     * Verifie si le joueur 'player' a gagné
+     * @param player joueur à verifier
+     * @return true si le le joueur 'player' à gagné
+     */
     @Override
     public boolean checkWinner(char player) {
-        boolean win = checkGrid2D(player) | checkDepth(player) | check(player);
+        boolean win = checkGrid2D(player) | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
         return win;
     }
 
+    /**
+     * @return la taille de la grid
+     */
     @Override
     public int getSize() {
         return this.size;
     }
 
+    /**
+     * @return Retourne la liste des case gagnante
+     */
     public ArrayList<int[]> getWinner() {
         return this.gridWinner;
     }
 
+    /**
+     * @param player joueur à verifier
+     * @return true si les axes Z sont gagnante
+     */
     private boolean checkDepth(char player) {
         boolean win = false;
         for (int x = 0; x < this.size; x++) {
@@ -63,6 +102,10 @@ public class Grid3D implements Grid {
         return win;
     }
 
+    /**
+     * @param player joueur à verifier
+     * @return true si un axe des axes des grid2D est gagnante
+     */
     private boolean checkGrid2D(char player) {
         boolean win = false;
         for (int z = 0; z < this.size; z++) {
@@ -77,7 +120,11 @@ public class Grid3D implements Grid {
         return win;
     }
 
-    private boolean check(char player) {
+    /**
+     * @param player joueur à verifier
+     * @return true si un des diagonales X parallèle a l'axe Y est gagnante
+     */
+    private boolean checkCrossX(char player){
         boolean win = false;
         //Verifie les axes (z,x) du bas vers le haut
         for (int y = 0; y < this.size; y++) {
@@ -92,23 +139,6 @@ public class Grid3D implements Grid {
                 win=true;
                 for (int i = 0; i < this.size; i++) {
                     this.gridWinner.add(new int[]{i,i,y});
-                }
-            }
-        }
-
-        //Verifie les axes (z,y) du bas vers le haut
-        for (int x = 0; x < this.size; x++) {
-            boolean diagonalWin = true;
-            for (int i = 0; i < this.size; i++) {
-                if(grid[i].getValue(x, i) != player){
-                    diagonalWin=false;
-                    break;
-                }
-            }
-            if(diagonalWin){
-                win=true;
-                for (int i = 0; i < this.size; i++) {
-                    this.gridWinner.add(new int[]{i,x,i});
                 }
             }
         }
@@ -130,6 +160,32 @@ public class Grid3D implements Grid {
             }
         }
 
+        return win;
+    }
+
+    /**
+     * @param player joueur à verifier
+     * @return true si un des diagonales Y parallèle a l'axe X est gagnante
+     */
+    private boolean checkCrossY(char player){
+        boolean win = false;
+        //Verifie les axes (z,y) du bas vers le haut
+        for (int x = 0; x < this.size; x++) {
+            boolean diagonalWin = true;
+            for (int i = 0; i < this.size; i++) {
+                if(grid[i].getValue(x, i) != player){
+                    diagonalWin=false;
+                    break;
+                }
+            }
+            if(diagonalWin){
+                win=true;
+                for (int i = 0; i < this.size; i++) {
+                    this.gridWinner.add(new int[]{i,x,i});
+                }
+            }
+        }
+
         //Verifie les axes (z,y) du haut vers le bas
         for (int x = 0; x < this.size; x++) {
             boolean diagonalWin = true;
@@ -146,6 +202,15 @@ public class Grid3D implements Grid {
                 }
             }
         }
+        return win;
+    }
+
+    /**
+     * @param player joueur à verifier
+     * @return true si une des diagonales entre 2 des 8 coins est gagnante
+     */
+    private boolean checkDiagonals(char player) {
+        boolean win = false;
 
         boolean diagonalWin = true;
         for (int i = 0; i < this.size; i++) {
