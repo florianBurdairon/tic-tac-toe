@@ -28,7 +28,7 @@ public class PlayerClient extends Client{
     public void run(){
         try{
             server = new CustomSocket(new Socket(this.serverIP, this.port));
-            System.out.println("Connected");
+            System.out.println("Connecté");
 
             super.run();
 
@@ -47,7 +47,9 @@ public class PlayerClient extends Client{
         String GridLength;
         String GridDimension;
         try {
+            System.out.print("Choisissez la taille de la grille : ");
             GridLength = sysIn.readLine();
+            System.out.print("Choisissez la dimension de la grille : ");
             GridDimension= sysIn.readLine();
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,27 +57,21 @@ public class PlayerClient extends Client{
             GridDimension = "2";
         }
 
-        if (GridDimension == "2"){
-            param[0]=GridLength;
-            param[1]=GridDimension;
-        }
-        if (GridDimension == "3" ){
-            param[0]=GridLength;
-            param[1]=GridDimension;
-        }
+        param[0]=GridLength;
+        param[1]=GridDimension;
+
         return new NetworkMessage(ProtocolAction.AnswerDimensions,param);
     }
 
     @Override
     public NetworkMessage startGame() {
-        System.out.println("Game has started");
+        System.out.println("Lancement de la partie");
         return new NetworkMessage(ProtocolAction.NONE);
     }
 
     @Override
     public NetworkMessage play(String posOpponent) {
         return new NetworkMessage(ProtocolAction.NONE);
-
     }
 
     @Override

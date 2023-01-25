@@ -25,7 +25,7 @@ public class CustomSocket {
     }
 
     public void send(NetworkMessage networkMessage){
-        String msg = "" + networkMessage.getProtocolAction();
+        String msg = "" + networkMessage.getProtocolAction().getValue();
 
         if (networkMessage.getParameters() != null){
             msg += ":";
@@ -33,7 +33,6 @@ public class CustomSocket {
                 msg += s + ",";
             }
         }
-
         out.println(msg);
     }
 
@@ -48,7 +47,7 @@ public class CustomSocket {
         String msg;
         try {
             while (!in.ready()) {
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.SECONDS.sleep(1);
             }
             msg = in.readLine();
         } catch (Exception e) {
@@ -60,8 +59,10 @@ public class CustomSocket {
 
         if (msg.contains(":")) {
             String[] message = msg.split(":");
-            ProtocolAction protocolAction = ProtocolAction.fromInt(Integer.parseInt(msg));
+
+            ProtocolAction protocolAction = ProtocolAction.fromInt(Integer.parseInt(message[0]));
             if (protocolAction == ProtocolAction.NONE){
+                System.out.println("No detected protocol action - param");
                 throw new ProtocolActionException();
             }
             networkMessage.setProtocolAction(protocolAction);
@@ -74,6 +75,7 @@ public class CustomSocket {
 
         ProtocolAction protocolAction = ProtocolAction.fromInt(Integer.parseInt(msg));
         if (protocolAction == ProtocolAction.NONE){
+            System.out.println("No detected protocol action");
             throw new ProtocolActionException();
         }
         networkMessage.setProtocolAction(protocolAction);

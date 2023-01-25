@@ -29,7 +29,7 @@ public abstract class Client extends Thread{
             try {
                 networkMessage = server.read();
             } catch (Exception e) {
-                System.out.println(e.getStackTrace());
+                e.getStackTrace();
                 networkMessage = new NetworkMessage(ProtocolAction.NONE);
             }
 

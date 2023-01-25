@@ -20,6 +20,11 @@ public class AIClient extends Client{
     }
 
     @Override
+    public NetworkMessage startGame() {
+        return null;
+    }
+
+    @Override
     public NetworkMessage play(String posOpponent) {
         return new NetworkMessage(ProtocolAction.NONE);
 

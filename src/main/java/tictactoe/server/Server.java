@@ -37,12 +37,15 @@ public class Server extends Thread {
     public void run(){
         try {
             ServerSocket server = new ServerSocket(port);
-            System.out.println("Waiting for client...");
+            System.out.println("En attente de joueur...");
 
             client1 = new CustomSocket(server.accept());
+            System.out.println("Joueur 1 connecté");
             client2 = new CustomSocket(server.accept());
+            System.out.println("Joueur 2 connecté");
 
             selectDimensions();
+            System.out.println("Dimensions sélectionnées");
 
             startGame();
 
@@ -68,6 +71,7 @@ public class Server extends Thread {
      * Function that send a message to ask client1 to choose the size and the dimension of the grid and process the answer.
      */
     public void selectDimensions(){
+        //System.out.println("Sending client1 to select dimensions");
         NetworkMessage msg = new NetworkMessage(ProtocolAction.SelectDimensions);
         client1.send(msg);
 
@@ -83,6 +87,7 @@ public class Server extends Thread {
             catch (Exception e){
                 //Set answer to null
                 answer = new NetworkMessage(ProtocolAction.NONE);
+                System.out.println("Error on reading");
             }
             ProtocolAction action = answer.getProtocolAction();
 
