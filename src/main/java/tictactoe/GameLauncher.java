@@ -120,7 +120,7 @@ public class GameLauncher {
                     client_host.start();
                     break;
                case Client: // 1 Client
-                    System.out.println("Adresse IP du serveur : ");
+                    System.out.print("Adresse IP du serveur : ");
                     String ip = "127.0.0.1";
                     try {
                          ip = sysIn.readLine();

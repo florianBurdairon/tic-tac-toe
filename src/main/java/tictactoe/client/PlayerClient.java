@@ -1,5 +1,7 @@
 package tictactoe.client;
 
+import tictactoe.CustomSocket;
+
 import java.net.Socket;
 
 /**
@@ -19,7 +21,7 @@ public class PlayerClient extends Client{
     public void run(){
         try{
             System.out.println("Connection to server");
-            server = new Socket(this.serverIP, this.port);
+            server = new CustomSocket(new Socket(this.serverIP, this.port));
             System.out.println("Connected");
 
         } catch (Exception e) {

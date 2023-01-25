@@ -3,10 +3,14 @@ package tictactoe.server;
 import java.net.*;
 import java.io.*;
 
+
 public class Server extends Thread {
     private int port;
     private Socket client1;
     private Socket client2;
+
+    private int gridLength;
+    private int gridDim;
 
     public Server () {
         this(9876);
@@ -21,8 +25,8 @@ public class Server extends Thread {
     public void run(){
         try {
             ServerSocket server = new ServerSocket(port);
-
             System.out.println("Waiting for client...");
+
             client1 = server.accept();
             System.out.println("Connected with " + client1.getInetAddress());
             client2 = server.accept();

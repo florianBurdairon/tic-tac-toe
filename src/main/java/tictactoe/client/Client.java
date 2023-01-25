@@ -1,4 +1,6 @@
 package tictactoe.client;
+import tictactoe.CustomSocket;
+
 import java.net.*;
 import java.io.*;
 
@@ -7,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class Client extends Thread{
     protected int port;
     protected String serverIP;
-    protected Socket server;
+    protected CustomSocket server;
 
     public Client(String serverIP, int port){
         this.serverIP = serverIP;
