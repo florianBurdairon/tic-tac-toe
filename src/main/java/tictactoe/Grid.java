@@ -9,22 +9,18 @@ import java.util.ArrayList;
  */
 public interface Grid extends Displayable {
     /**
-     * Verifie si le joueur 'player' a gagné
-     * @param player joueur à verifier
-     * @return true si le le joueur 'player' à gagné
+     * check if player 'player' won
+     * @param player player charactere to check
+     * @return true if the 'player' won
      */
     public boolean checkWinner(char player);
     /**
-     * @return la taille de la grid
+     * @return size size of the grid
      */
     public int getSize();
-    /**
-     * @return Retourne la liste des case gagnante
-     */
-    public ArrayList<int[]> getWinner();
 
     /**
-     * @return les lignes representant la grid
+     * @return lines representing the grid
      */
     public String[] getGridAsStrings();
 

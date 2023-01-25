@@ -1,81 +1,79 @@
 package tictactoe;
 
-import java.util.ArrayList;
-
 /**
- * Classe de grid3D
+ * Class grid2D
  * @author Halvick Thomas
  * @version 1
  */
 public class Grid2D implements Grid {
     /**
-     * Grille 2 dimensions
+     * 2d grid
      */
-    private char[][] grid;
+    private final char[][] grid;
 
     /**
-     * Liste des coups gagnant
+     * grid of winning cells
      */
-    private ArrayList<int[]> gridWinner;
+    private final boolean[][] gridWinner;
 
     /**
-     * Taille de la grille
+     * size of the grid
      */
-    private int size;
+    private final int size;
 
     /**
-     * @param size Taille de la grille
+     * @param size size of the grid
      */
     public Grid2D(int size) {
         this.size = size;
         this.grid = new char[size][size];
-        this.gridWinner = new ArrayList();
+        this.gridWinner = new boolean[size][size];
     }
 
     /**
-     * @param grid grille a copier
+     * @param grid grid to copy
      */
     public Grid2D(char[][] grid) {
         this.grid = grid;
         this.size = grid.length;
-        this.gridWinner = new ArrayList();
+        this.gridWinner = new boolean[this.size][this.size];
     }
 
     /**
-     * Verifie si le joueur 'player' a gagné
-     * @param player joueur à verifier
-     * @return true si le le joueur 'player' à gagné
+     * check if player 'player' won
+     * @param player player charactere to check
+     * @return true if the 'player' won
      */
     @Override
     public boolean checkWinner(char player) {
-        boolean win = checkColumns(player) | checkRows(player) | checkDiagonals(player);
-        return win;
+        return checkColumns(player) | checkRows(player) | checkDiagonals(player);
     }
 
     /**
-     * @return Retourne la liste des case gagnante
-     */
-    public ArrayList<int[]> getWinner(){
-        return  this.gridWinner;
-    }
-
-    /**
-     * @return les lignes representant la grid
+     * @return lines representing the grid
      */
     @Override
     public String[] getGridAsStrings() {
         String[] out = new String[this.size];
-        //taille necessaire pour ecrire le plus grand chiffre
+        //number of caracter needed for the bigest number
         int log = (int)Math.log10(this.size*this.size)+1;
         for(int y = 0; y < this.size; y++){
             out[y] = "|";
             for(int x = 0; x < this.size; x++){
                 if(this.grid[x][y] == '\0'){
-                    //Complete le nombre avec des espaces pour qu'il fasse la meme taille que le plus grand nombre
-                    out[y] += " " + String.format("%1$" + log + "s", x+y*this.size+1);
+                    //complete smaller number to be as long as the bigest number
+                    out[y] += " "
+                            + String.format("%1$" + log + "s", x+y*this.size+1);
                 }
                 else{
-                    out[y] += " " + this.grid[x][y];
+                    out[y] += " "
+                            //Add color green to display
+                            + (gridWinner[x][y] ? "\u001B[32m" : "")
+                            //complete smaller number to be as long as the bigest number
+                            + String.format("%1$" + log + "s", this.grid[x][y])
+                            //end color
+                            + (gridWinner[x][y] ? "\u001B[0m" : "");
+
                 }
             }
             out[y] += " |";
@@ -84,7 +82,7 @@ public class Grid2D implements Grid {
     }
 
     /**
-     * @return la taille de la grid
+     * @return grid's size
      */
     @Override
     public int getSize() {
@@ -92,9 +90,9 @@ public class Grid2D implements Grid {
     }
 
     /**
-     * @param x
-     * @param y
-     * @return la valeur de la case
+     * @param x x position
+     * @param y y position
+     * @return cell's value
      */
     public int getValue(int x, int y) {
         return grid[x][y];
@@ -102,7 +100,7 @@ public class Grid2D implements Grid {
 
     /**
      * @param player joueur à verifier
-     * @return true si une des colonnes est gagnante
+     * @return true if at least one column is completed
      */
     private boolean checkColumns(char player){
         boolean win = false;
@@ -114,11 +112,10 @@ public class Grid2D implements Grid {
                     break;
                 }
             }
-            //on stocke les coups gagnants
             if(columnWin){
                 win = true;
                 for (int y = 0; y < this.size; y++) {
-                    gridWinner.add(new int[]{x, y});
+                    gridWinner[x][y] = true;
                 }
             }
         }
@@ -126,8 +123,8 @@ public class Grid2D implements Grid {
     }
 
     /**
-     * @param player joueur à verifier
-     * @return true si une des lignes est gagnante
+     * @param player player charactere to check
+     * @return true if at least one row is completed
      */
     private boolean checkRows(char player){
         boolean win = false;
@@ -143,7 +140,7 @@ public class Grid2D implements Grid {
             if(rowWin){
                 win = true;
                 for (int x = 0; x < this.size; x++) {
-                    gridWinner.add(new int[]{x, y});
+                    gridWinner[x][y] = true;
                 }
             }
         }
@@ -151,8 +148,8 @@ public class Grid2D implements Grid {
     }
 
     /**
-     * @param player joueur à verifier
-     * @return true si une des diagonales est gagnante
+     * @param player player charactere to check
+     * @return true if at least one of 4 diagonals is completed
      */
     private boolean checkDiagonals(char player){
         boolean winDiag1 = true;
@@ -164,7 +161,7 @@ public class Grid2D implements Grid {
         }
         if(winDiag1 ) {
             for (int i = 0; i < this.size; i++) {
-                this.gridWinner.add(new int[]{i, i});
+                gridWinner[i][i] = true;
             }
         }
         boolean winDiag2 = true;
@@ -176,7 +173,7 @@ public class Grid2D implements Grid {
         }
         if(winDiag2){
             for (int i = 0; i < this.size; i++) {
-                this.gridWinner.add(new int[]{this.size-1-i, this.size-1-i});
+                gridWinner[this.size-1-i][this.size-1-i] = true;
             }
         }
         return winDiag1 || winDiag2;
@@ -184,7 +181,27 @@ public class Grid2D implements Grid {
 
 
     /**
-     * Affiche la grid2D
+     * Set cell as winning cell
+     * @param x x position
+     * @param y y position
+     */
+    public void setCellWinner(int x, int y){
+        this.gridWinner[x][y] = true;
+    }
+
+
+    /**
+     * place a player cell
+     * @param x x position
+     * @param y y position
+     * @param player player charactere
+     */
+    public void place(int x, int y, char player){
+        this.grid[x][y] = player;
+    }
+
+    /**
+     * Print 2D grid
      */
     @Override
     public void display() {
