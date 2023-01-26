@@ -9,11 +9,95 @@ import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
 public class CustomSocket {
+    class ServerPingSender extends Thread {
+        @Override
+        public void run() {
+            do {
+                try {
+                    Thread.sleep(2000);
+                    if (isConnected) {
+                        //System.out.println("Sent ping");
+                        out.println("p");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (isConnected);
+        }
+    }
+
+    class Firewall extends Thread {
+
+        private long timeLastPing;
+        private boolean isServer;
+
+        public Firewall(boolean isServer){
+            this.isServer = isServer;
+        }
+
+        @Override
+        public void run() {
+            timeLastPing = System.currentTimeMillis();
+            do {
+                // Get message from buffer
+                String msg = "";
+                try {
+                    while (!in.ready() && isConnected) {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                        if (System.currentTimeMillis() - timeLastPing > 10000) {
+                            System.out.println("DISCONNECTED");
+                            isConnected = false;
+                        }
+                    }
+                    if (isConnected)
+                        msg = in.readLine();
+                    else
+                        msg = "";
+                } catch (Exception e) {
+                    System.out.println("Impossible to read from socket");
+                    isConnected = false;
+                    msg = "";
+                }
+
+                // If there is a message :
+                if (msg != "") {
+                    // If the message is a ping :
+                    if (msg.charAt(0) == 'p') { // We send pack a ping
+                        //System.out.println("Received ping");
+                        timeLastPing = System.currentTimeMillis();
+                        if (!isServer) {
+                            //System.out.println("Answer ping");
+                            out.println("p");
+                        }
+                    }
+                    else {
+                        msg_to_listener = msg;
+                    }
+                }
+            } while (isConnected);
+
+
+            msg_to_listener = "" + ProtocolAction.NetworkError.getValue();
+        }
+    }
+
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
 
-    public CustomSocket (Socket socket) {
+    /**
+     * Thread to manage the heartbeat system + communicate normal message
+     */
+    private Firewall firewall;
+    private ServerPingSender pingSender;
+
+    private volatile boolean isConnected;
+    private boolean isServer;
+
+    private volatile String msg_to_listener;
+
+    public CustomSocket (Socket socket, boolean isServer) {
+        this.isServer = true;
         this.socket = socket;
 
         try {
@@ -22,6 +106,19 @@ public class CustomSocket {
         } catch (Exception e) {
             System.out.println("Erreur sur la création de socket");
         }
+
+        isConnected = true;
+        msg_to_listener = "";
+        if (isServer) {
+            pingSender = new ServerPingSender();
+            pingSender.start();
+        }
+        firewall = new Firewall(isServer);
+        firewall.start();
+    }
+
+    public boolean isConnected(){
+        return this.isConnected;
     }
 
     public void send(NetworkMessage networkMessage){
@@ -43,16 +140,18 @@ public class CustomSocket {
         this.send(new NetworkMessage(protocolAction, param));
     }
 
-    public NetworkMessage read() throws ProtocolActionException {
+    public NetworkMessage read() throws ProtocolActionException, InterruptedException {
         String msg;
+
         try {
-            while (!in.ready()) {
-                TimeUnit.SECONDS.sleep(1);
+            while (msg_to_listener == "") {
+                TimeUnit.MILLISECONDS.sleep(500);
             }
-            msg = in.readLine();
+            msg = msg_to_listener;
+            msg_to_listener = "";
         } catch (Exception e) {
-            System.out.println("Impossible to read from socket");
-            return new NetworkMessage(ProtocolAction.NetworkError);
+            System.out.println("INTerrupted");
+            throw new InterruptedException();
         }
 
         NetworkMessage networkMessage = new NetworkMessage();

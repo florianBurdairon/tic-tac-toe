@@ -27,7 +27,7 @@ public class PlayerClient extends Client{
     @Override
     public void run(){
         try{
-            server = new CustomSocket(new Socket(this.serverIP, this.port));
+            server = new CustomSocket(new Socket(this.serverIP, this.port), true);
             System.out.println("Connecté");
 
             super.run();
