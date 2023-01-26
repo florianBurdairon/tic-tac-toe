@@ -1,8 +1,9 @@
 package tictactoe.client;
+
 import tictactoe.CustomSocket;
-import tictactoe.Grid;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.grid.Grid;
 
 public abstract class Client extends Thread{
     protected int port;
@@ -52,7 +53,7 @@ public abstract class Client extends Thread{
                     networkAnswer = selectDimensions();
                     break;
                 case StartGame:
-                    networkAnswer = startGame(parameters[0]);
+                    networkAnswer = startGame(parameters[0], parameters[1], parameters[2]);
                     break;
                 case Play:
                     networkAnswer = play(parameters[0]);
@@ -69,7 +70,7 @@ public abstract class Client extends Thread{
     }
 
     public abstract NetworkMessage selectDimensions();
-    public abstract NetworkMessage startGame(String role);
+    public abstract NetworkMessage startGame(String role, String dimension, String size);
     public abstract NetworkMessage play(String posOpponent);
     public abstract NetworkMessage validate();
     public abstract NetworkMessage waitPlayer();

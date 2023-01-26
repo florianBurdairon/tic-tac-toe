@@ -1,6 +1,9 @@
 package tictactoe.server;
 
 import tictactoe.*;
+import tictactoe.grid.Grid;
+import tictactoe.grid.Grid2D;
+import tictactoe.grid.Grid3D;
 
 import java.net.*;
 import java.util.Random;
@@ -106,7 +109,7 @@ public class Server extends Thread {
                     }
                     //If the dimension is 3D
                     else if(Integer.parseInt(parameters[1]) == 3){
-                        //TODO use Grid3D when ready
+                        grid = new Grid3D(Integer.parseInt(parameters[0]));
                         isDimensionSelected = true;
                     }
                 }
@@ -122,8 +125,8 @@ public class Server extends Thread {
         Random rand = new Random();
         NetworkMessage msgClient1;
         NetworkMessage msgClient2;
-        String[] param1 = new String[1];
-        String[] param2 = new String[1];
+        String[] param1 = new String[3];
+        String[] param2 = new String[3];
 
         isClient1Turn = rand.nextBoolean();
 
@@ -135,6 +138,19 @@ public class Server extends Thread {
             param1[0] = "O";
             param2[0] = "X";
         }
+
+        if(grid.getClass() == Grid3D.class){
+            param1[1] = "3";
+            param2[1] = "3";
+        }
+        else{
+            param1[1] = "2";
+            param2[1] = "2";
+        }
+
+        param1[2] = Integer.toString(grid.getSize());
+        param2[2] = Integer.toString(grid.getSize());
+
         msgClient1 = new NetworkMessage(ProtocolAction.StartGame, param1);
         msgClient2 = new NetworkMessage(ProtocolAction.StartGame, param2);
         client1.send(msgClient1);

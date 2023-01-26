@@ -2,6 +2,8 @@ package tictactoe.client;
 
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.grid.Grid2D;
+import tictactoe.grid.Grid3D;
 
 public class AIClient extends Client{
 
@@ -20,8 +22,15 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage startGame(String role) {
-        return null;
+    public NetworkMessage startGame(String role, String dimension, String size) {
+        this.role = role;
+        if(dimension == "3") this.grid = new Grid3D(Integer.parseInt(size));
+        else this.grid = new Grid2D(Integer.parseInt(size));
+
+        if (this.role == "X"){
+            return play(null);
+        }
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     @Override
