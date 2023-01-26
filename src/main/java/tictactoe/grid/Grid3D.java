@@ -1,4 +1,7 @@
-package tictactoe;
+package tictactoe.grid;
+
+import tictactoe.grid.exceptions.PositionInvalidException;
+import tictactoe.grid.exceptions.PositionUsedException;
 
 /**
  * Class grid3D
@@ -38,18 +41,6 @@ public class Grid3D implements Grid {
         for(int i =0 ; i < this.size; i++){
             this.grid[i] = new Grid2D(grid[i]);
         }
-    }
-
-
-    /**
-     * check if player 'player' won
-     * @param player player charactere to check
-     * @return true if the 'player' won
-     */
-    @Override
-    public boolean checkWinner(char player) {
-        boolean win = checkGrid2D(player) | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
-        return win;
     }
 
     /**
@@ -131,22 +122,6 @@ public class Grid3D implements Grid {
      */
     public boolean getCellStatus(int x, int y,int z) {
         return grid[z].getCellStatus(x,y);
-    }
-
-
-    /**
-     * @param player player charactere to check
-     * @return true if at least one of grid2d's conditions is completed
-     */
-    private boolean checkGrid2D(char player) {
-        boolean win = false;
-        for (int z = 0; z < this.size; z++) {
-            boolean rowWinner = grid[z].checkWinner(player);
-            if (rowWinner) {
-                win = true;
-            }
-        }
-        return win;
     }
 
     /**
@@ -276,7 +251,7 @@ public class Grid3D implements Grid {
         if(diagonalWin){
             win=true;
             for (int i = 0; i < this.size; i++) {
-                this.grid[i].setCellWinner(i,this.size-1-1);
+                this.grid[i].setCellWinner(i,this.size-1-i);
             }
         }
 
@@ -290,7 +265,8 @@ public class Grid3D implements Grid {
         if(diagonalWin){
             win=true;
             for (int i = 0; i < this.size; i++) {
-                this.grid[i].setCellWinner(this.size-1-1,i);
+                System.out.println(i);
+                this.grid[i].setCellWinner(this.size-1-i,i);
 
             }
         }
@@ -300,15 +276,43 @@ public class Grid3D implements Grid {
 
     /**
      * place a player cell
-     * @param x x position
-     * @param y y position
-     * @param z z position
+     * @param position the cell position as [A-Z]\d
      * @param player player charactere
      * @return true if the player won
+     * @throws PositionInvalidException
+     * @throws PositionUsedException
      */
-    public boolean place(int x, int y, int z, char player){
-        this.grid[z].place(x,y,player);
-        return this.checkWinner(player);
+    public boolean place(String position, char player) throws PositionInvalidException, PositionUsedException {
+        if(!position.matches("^([A-Z]|[a-z])(\\d)+$"))
+            throw new PositionInvalidException(position);
+
+        String[] groups = position.split("(?<=\\D)(?=\\d)");
+
+        int z = (int)groups[0].charAt(0);
+
+        //if between a (97) and a+size
+        if(z >= 97 && z < 97+this.size){
+            z -=97;
+        }
+        //if between A (65) and A+size
+        else if(z >= 65 && z < 65+this.size){
+            z -=65;
+        }
+        else{
+            throw new PositionInvalidException(position);
+        }
+
+        try {
+            boolean win2D = this.grid[z].place(groups[1],player);
+            return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+        }
+        catch (PositionUsedException e){
+            throw  new PositionUsedException(position);
+        }
+        catch (PositionInvalidException e){
+            throw new PositionInvalidException(position);
+        }
+
     }
 
     /**
