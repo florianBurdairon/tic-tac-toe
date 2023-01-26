@@ -71,10 +71,10 @@ public class PlayerClient extends Client{
     @Override
     public NetworkMessage startGame(String role, String dimension, String size) {
         this.role = role;
-        if(dimension == "3") this.grid = new Grid3D(Integer.parseInt(size));
+        if(dimension.equals("3")) this.grid = new Grid3D(Integer.parseInt(size));
         else this.grid = new Grid2D(Integer.parseInt(size));
 
-        if (this.role == "X"){
+        if (this.role.equals("X")){
             return play(null);
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
@@ -94,6 +94,9 @@ public class PlayerClient extends Client{
                 throw new RuntimeException(e);
             }
         }
+
+        grid.display();
+
         String[] param = new String[2];
 
         String position = null;
@@ -105,7 +108,7 @@ public class PlayerClient extends Client{
                 position = sysIn.readLine();
                 isEntered = true;
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Erreur de saisie");
             }
         }
         param[0]=position;
