@@ -1,4 +1,7 @@
-package tictactoe;
+package tictactoe.grid;
+
+import tictactoe.grid.exceptions.PositionInvalidException;
+import tictactoe.grid.exceptions.PositionUsedException;
 
 /**
  * Class grid2D
@@ -37,16 +40,6 @@ public class Grid2D implements Grid {
         this.grid = grid;
         this.size = grid.length;
         this.gridWinner = new boolean[this.size][this.size];
-    }
-
-    /**
-     * check if player 'player' won
-     * @param player player charactere to check
-     * @return true if the 'player' won
-     */
-    @Override
-    public boolean checkWinner(char player) {
-        return checkColumns(player) | checkRows(player) | checkDiagonals(player);
     }
 
     /**
@@ -199,17 +192,33 @@ public class Grid2D implements Grid {
         this.gridWinner[x][y] = true;
     }
 
-
     /**
      * place a player cell
-     * @param x x position
-     * @param y y position
+     * @param position the case number
      * @param player player charactere
      * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
      */
-    public boolean place(int x, int y, char player){
-        this.grid[x][y] = player;
-        return this.checkWinner(player);
+    public boolean place(String position, char player) throws PositionUsedException,PositionInvalidException {
+        try {
+            int number = Integer.parseInt(position)-1;
+            //check if cell is in this grid
+            if(number < 0 || number >= this.size*this.size)
+                throw new PositionInvalidException(position);
+
+            int x = number % this.size;
+            int y = (int) number / this.size;
+            //check if cell is not already used
+            if (this.grid[x][y] != '\0')
+                throw new PositionUsedException(position);
+
+            this.grid[x][y] = player;
+            return checkColumns(player) | checkRows(player) | checkDiagonals(player);
+        }
+        catch(NumberFormatException e){
+            throw new PositionInvalidException(position);
+        }
     }
 
     /**
