@@ -1,8 +1,12 @@
 package tictactoe.server;
 
 import tictactoe.*;
+import tictactoe.grid.Grid;
+import tictactoe.grid.Grid2D;
+import tictactoe.grid.Grid3D;
 
 import java.net.*;
+import java.util.Random;
 
 /**
  *
@@ -11,6 +15,8 @@ public class Server extends Thread {
     private int port;
     private CustomSocket client1;
     private CustomSocket client2;
+
+    private boolean isClient1Turn;
 
     private Grid grid = null;
 
@@ -103,7 +109,7 @@ public class Server extends Thread {
                     }
                     //If the dimension is 3D
                     else if(Integer.parseInt(parameters[1]) == 3){
-                        //TODO use Grid3D when ready
+                        grid = new Grid3D(Integer.parseInt(parameters[0]));
                         isDimensionSelected = true;
                     }
                 }
@@ -116,16 +122,50 @@ public class Server extends Thread {
     }
 
     public void startGame(){
-        NetworkMessage msg = new NetworkMessage(ProtocolAction.StartGame);
-        client1.send(msg);
-        client2.send(msg);
+        Random rand = new Random();
+        NetworkMessage msgClient1;
+        NetworkMessage msgClient2;
+        String[] param1 = new String[3];
+        String[] param2 = new String[3];
+
+        isClient1Turn = rand.nextBoolean();
+
+        if(isClient1Turn){
+            param1[0] = "X";
+            param2[0] = "O";
+        }
+        else {
+            param1[0] = "O";
+            param2[0] = "X";
+        }
+
+        if(grid.getClass() == Grid3D.class){
+            param1[1] = "3";
+            param2[1] = "3";
+        }
+        else{
+            param1[1] = "2";
+            param2[1] = "2";
+        }
+
+        param1[2] = Integer.toString(grid.getSize());
+        param2[2] = Integer.toString(grid.getSize());
+
+        msgClient1 = new NetworkMessage(ProtocolAction.StartGame, param1);
+        msgClient2 = new NetworkMessage(ProtocolAction.StartGame, param2);
+        client1.send(msgClient1);
+        client2.send(msgClient2);
     }
 
     public void endGame(){
-
+        NetworkMessage msgClient1 = new NetworkMessage(ProtocolAction.EndGame);
+        NetworkMessage msgClient2 = new NetworkMessage(ProtocolAction.EndGame);
+        client1.send(msgClient1);
+        client2.send(msgClient2);
     }
 
     public void play(){
+
 
     }
 
@@ -146,5 +186,4 @@ public class Server extends Thread {
     public void resumeGame(){
 
     }
-
 }

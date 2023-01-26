@@ -3,6 +3,10 @@ package tictactoe.client;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.grid.Grid2D;
+import tictactoe.grid.Grid3D;
+import tictactoe.grid.exceptions.PositionInvalidException;
+import tictactoe.grid.exceptions.PositionUsedException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,13 +40,14 @@ public class PlayerClient extends Client{
             System.out.println("Error on connection to server");
         }
     }
-/*
-* Function which send a message with the gridlength and his dimension to the server.
-* */
+
+    /**
+    * Function which send a message with the gridlength and his dimension to the server.
+    **/
     @Override
     public NetworkMessage selectDimensions() {
 
-        String[] param = {"GridLength", "GridDimension"};
+        String[] param = new String[2];
 
         String GridLength;
         String GridDimension;
@@ -64,14 +69,52 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage startGame() {
-        System.out.println("Lancement de la partie");
-        return new NetworkMessage(ProtocolAction.NONE);
+    public NetworkMessage startGame(String role, String dimension, String size) {
+        this.role = role;
+        if(dimension.equals("3")) this.grid = new Grid3D(Integer.parseInt(size));
+        else this.grid = new Grid2D(Integer.parseInt(size));
+
+        if (this.role.equals("X")){
+            return play(null);
+        }
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     @Override
     public NetworkMessage play(String posOpponent) {
-        return new NetworkMessage(ProtocolAction.NONE);
+        if(posOpponent!=null){
+            char opponentRole;
+            if(role=="X") opponentRole = 'O';
+            else opponentRole = 'X';
+            try {
+                grid.place(posOpponent, opponentRole);
+            } catch (PositionUsedException e) {
+                throw new RuntimeException(e);
+            } catch (PositionInvalidException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        grid.display();
+
+        String[] param = new String[2];
+
+        String position = null;
+        boolean isEntered = false;
+        while(!isEntered){
+            try {
+                if(grid.getClass() == Grid3D.class) System.out.print("Choisissez une case où jouer (Ex: A1) : ");
+                else System.out.print("Choisissez une case où jouer (Ex: 1) : ");
+                position = sysIn.readLine();
+                isEntered = true;
+            } catch (Exception e) {
+                System.out.println("Erreur de saisie");
+            }
+        }
+        param[0]=position;
+        param[1]=role;
+
+        return new NetworkMessage(ProtocolAction.Place,param);
     }
 
     @Override
