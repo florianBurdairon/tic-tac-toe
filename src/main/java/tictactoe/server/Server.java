@@ -39,9 +39,9 @@ public class Server extends Thread {
             ServerSocket server = new ServerSocket(port);
             System.out.println("En attente de joueur...");
 
-            client1 = new CustomSocket(server.accept());
+            client1 = new CustomSocket(server.accept(), false);
             System.out.println("Joueur 1 connecté");
-            client2 = new CustomSocket(server.accept());
+            client2 = new CustomSocket(server.accept(), false);
             System.out.println("Joueur 2 connecté");
 
             selectDimensions();
