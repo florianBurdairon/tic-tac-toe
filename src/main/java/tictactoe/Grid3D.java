@@ -114,6 +114,27 @@ public class Grid3D implements Grid {
     }
 
     /**
+     * @param x x position
+     * @param y y position
+     * @param z z position
+     * @return cell's value
+     */
+    public int getValue(int x, int y,int z) {
+        return grid[z].getValue(x,y);
+    }
+
+    /**
+     * @param x x position
+     * @param y y position
+     * @param z z position
+     * @return true if cell is a winning cell
+     */
+    public boolean getCellStatus(int x, int y,int z) {
+        return grid[z].getCellStatus(x,y);
+    }
+
+
+    /**
      * @param player player charactere to check
      * @return true if at least one of grid2d's conditions is completed
      */
@@ -283,9 +304,11 @@ public class Grid3D implements Grid {
      * @param y y position
      * @param z z position
      * @param player player charactere
+     * @return true if the player won
      */
-    public void place(int x, int y, int z, char player){
+    public boolean place(int x, int y, int z, char player){
         this.grid[z].place(x,y,player);
+        return this.checkWinner(player);
     }
 
     /**

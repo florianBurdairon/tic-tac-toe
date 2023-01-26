@@ -99,6 +99,16 @@ public class Grid2D implements Grid {
     }
 
     /**
+     * @param x x position
+     * @param y y position
+     * @return true if cell is a winning cell
+     */
+    public boolean getCellStatus(int x, int y) {
+        return gridWinner[x][y];
+    }
+
+
+    /**
      * @param player joueur à verifier
      * @return true if at least one column is completed
      */
@@ -195,9 +205,11 @@ public class Grid2D implements Grid {
      * @param x x position
      * @param y y position
      * @param player player charactere
+     * @return true if the player won
      */
-    public void place(int x, int y, char player){
+    public boolean place(int x, int y, char player){
         this.grid[x][y] = player;
+        return this.checkWinner(player);
     }
 
     /**
