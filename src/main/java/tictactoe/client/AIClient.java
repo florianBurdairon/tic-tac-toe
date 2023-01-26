@@ -20,7 +20,7 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage startGame() {
+    public NetworkMessage startGame(String role) {
         return null;
     }
 

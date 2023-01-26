@@ -23,7 +23,7 @@ public enum ProtocolAction {
      * Protocol actions send by the client
      */
     AnswerDimensions, // GridLength , GridDimension
-    Placed,
+    Place,
     WaitMessage,
     WaitPlayer,
     AddAI,
@@ -47,7 +47,7 @@ public enum ProtocolAction {
             case NetworkError: return 6;
             case ResumeGame: return 7;
             case AnswerDimensions: return 8;
-            case Placed: return 9;
+            case Place: return 9;
             case WaitMessage: return 10;
             case WaitPlayer: return 11;
             case AddAI: return 12;
@@ -74,7 +74,7 @@ public enum ProtocolAction {
             case 6: return ProtocolAction.NetworkError;
             case 7: return ProtocolAction.ResumeGame;
             case 8: return ProtocolAction.AnswerDimensions;
-            case 9: return ProtocolAction.Placed;
+            case 9: return ProtocolAction.Place;
             case 10: return ProtocolAction.WaitMessage;
             case 11: return ProtocolAction.WaitPlayer;
             case 12: return ProtocolAction.AddAI;

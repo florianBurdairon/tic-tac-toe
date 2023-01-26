@@ -36,13 +36,14 @@ public class PlayerClient extends Client{
             System.out.println("Error on connection to server");
         }
     }
-/*
-* Function which send a message with the gridlength and his dimension to the server.
-* */
+
+    /**
+    * Function which send a message with the gridlength and his dimension to the server.
+    **/
     @Override
     public NetworkMessage selectDimensions() {
 
-        String[] param = {"GridLength", "GridDimension"};
+        String[] param = new String[2];
 
         String GridLength;
         String GridDimension;
@@ -64,14 +65,38 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage startGame() {
-        System.out.println("Lancement de la partie");
-        return new NetworkMessage(ProtocolAction.NONE);
+    public NetworkMessage startGame(String role) {
+        this.role = role;
+        if (this.role == "X"){
+            return play(null);
+        }
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     @Override
     public NetworkMessage play(String posOpponent) {
-        return new NetworkMessage(ProtocolAction.NONE);
+        if(posOpponent!=null){
+            //TODO Update player grid
+        }
+        String[] param = new String[2];
+
+        String GridLength;
+        String GridDimension;
+        try {
+            System.out.print("Choisissez la taille de la grille : ");
+            GridLength = sysIn.readLine();
+            System.out.print("Choisissez la dimension de la grille : ");
+            GridDimension= sysIn.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+            GridLength = "3";
+            GridDimension = "2";
+        }
+
+        param[0]=GridLength;
+        param[1]=GridDimension;
+
+        return new NetworkMessage(ProtocolAction.Place,param);
     }
 
     @Override
