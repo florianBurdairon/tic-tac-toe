@@ -244,14 +244,16 @@ public class Server extends Thread {
     }
 
     public void verification(CustomSocket client, String position, char role){
-        Grid tmp = grid;
         try {
-            tmp.place(position, role);
-            lastPlaceTurn[0] = position;
-            lastPlaceTurn[1] = Character.toString(role);
-            client.send(new NetworkMessage(ProtocolAction.AskConfirmation));
-        } catch (PositionUsedException e) {
-            error(client, "Cette case est déjà utilisée.");
+            if(!grid.isCellUsed(position)){
+                lastPlaceTurn[0] = position;
+                lastPlaceTurn[1] = Character.toString(role);
+                client.send(new NetworkMessage(ProtocolAction.AskConfirmation));
+            }
+            else{
+                error(client, "Cette case est déjà utilisée.");
+
+            }
         } catch (PositionInvalidException e) {
             error(client, "La case n'est pas valide.");
         }
