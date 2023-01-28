@@ -201,23 +201,71 @@ public class Grid2D implements Grid {
      * @throws PositionInvalidException
      */
     public boolean place(String position, char player) throws PositionUsedException,PositionInvalidException {
+        int[] positionArray = this.getPosition(position,this.size);
+        int x = positionArray[0];
+        int y = positionArray[1];
+        return  this.place(x,y,player);
+    }
+
+    /**
+     * @param x
+     * @param y
+     * @param player player charactere
+     * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
+     */
+    public boolean place(int x, int y, char player) throws PositionUsedException,PositionInvalidException {
+        //check if cell is not already used
+        if (this.grid[x][y] != '\0')
+            throw new PositionUsedException();
+        this.grid[x][y] = player;
+        return checkColumns(player) | checkRows(player) | checkDiagonals(player);
+    }
+
+    /**
+     * place a player cell
+     * @param position the case number
+     * @return true if the cell is used
+     * @throws PositionInvalidException
+     */
+    @Override
+    public boolean isCellUsed(String position) throws PositionInvalidException {
+        int[] positionArray = getPosition(position,this.size);
+        return  this.isCellUsed(positionArray[0],positionArray[1]);
+    }
+
+    /**
+     * place a player cell
+     * @param x
+     * @param y
+     * @return true if the cell is used
+     * @throws PositionInvalidException
+     */
+    public boolean isCellUsed(int x, int y) throws PositionInvalidException {
+        return  this.grid[x][y] != '\0';
+    }
+
+    /**
+     * Return a position from a string
+     * @param position
+     * @param size of the grid
+     * @return [x,y]
+     * @throws PositionInvalidException
+     */
+    static public int[] getPosition(String position,int size) throws PositionInvalidException {
         try {
             int number = Integer.parseInt(position)-1;
             //check if cell is in this grid
-            if(number < 0 || number >= this.size*this.size)
-                throw new PositionInvalidException(position);
+            if(number < 0 || number >= size*size)
+                throw new PositionInvalidException();
 
-            int x = number % this.size;
-            int y = (int) number / this.size;
-            //check if cell is not already used
-            if (this.grid[x][y] != '\0')
-                throw new PositionUsedException(position);
-
-            this.grid[x][y] = player;
-            return checkColumns(player) | checkRows(player) | checkDiagonals(player);
+            int x = number % size;
+            int y = (int) number / size;
+            return new int[]{x,y};
         }
         catch(NumberFormatException e){
-            throw new PositionInvalidException(position);
+            throw new PositionInvalidException();
         }
     }
 

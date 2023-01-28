@@ -20,6 +20,14 @@ public interface Grid extends Displayable {
     public boolean place(String position, char player) throws PositionUsedException,PositionInvalidException;
 
     /**
+     * place a player cell
+     * @param position the case number
+     * @return true if the cell is used
+     * @throws PositionInvalidException
+     */
+    public boolean isCellUsed(String position) throws PositionInvalidException;
+
+    /**
      * @return size size of the grid
      */
     public int getSize();

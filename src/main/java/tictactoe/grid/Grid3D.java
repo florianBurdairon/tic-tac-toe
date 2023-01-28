@@ -265,7 +265,6 @@ public class Grid3D implements Grid {
         if(diagonalWin){
             win=true;
             for (int i = 0; i < this.size; i++) {
-                System.out.println(i);
                 this.grid[i].setCellWinner(this.size-1-i,i);
 
             }
@@ -283,36 +282,50 @@ public class Grid3D implements Grid {
      * @throws PositionUsedException
      */
     public boolean place(String position, char player) throws PositionInvalidException, PositionUsedException {
+        int[] positionArray = getPosition(position,this.size);
+        boolean win2D = this.grid[positionArray[2]].place(positionArray[0],positionArray[1],player);
+        return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+    }
+
+    /**
+     * place a player cell
+     * @param position the case number
+     * @return true if the cell is used
+     * @throws PositionInvalidException
+     */
+    @Override
+    public boolean isCellUsed(String position) throws PositionInvalidException {
+        int[] positionArray = this.getPosition(position,this.size);
+        return this.grid[positionArray[2]].isCellUsed(positionArray[0],positionArray[1]);
+    }
+
+    /**
+     * Return a position from a string
+     * @param position
+     * @return [x,y,z]
+     * @throws PositionInvalidException
+     */
+    static public int[] getPosition(String position,int size) throws PositionInvalidException {
         if(!position.matches("^([A-Z]|[a-z])(\\d)+$"))
-            throw new PositionInvalidException(position);
+            throw new PositionInvalidException();
 
         String[] groups = position.split("(?<=\\D)(?=\\d)");
 
         int z = (int)groups[0].charAt(0);
 
         //if between a (97) and a+size
-        if(z >= 97 && z < 97+this.size){
+        if(z >= 97 && z < 97+size){
             z -=97;
         }
         //if between A (65) and A+size
-        else if(z >= 65 && z < 65+this.size){
+        else if(z >= 65 && z < 65+size){
             z -=65;
         }
         else{
-            throw new PositionInvalidException(position);
+            throw new PositionInvalidException();
         }
-
-        try {
-            boolean win2D = this.grid[z].place(groups[1],player);
-            return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
-        }
-        catch (PositionUsedException e){
-            throw  new PositionUsedException(position);
-        }
-        catch (PositionInvalidException e){
-            throw new PositionInvalidException(position);
-        }
-
+        int[] positionArray = Grid2D.getPosition(groups[1],size);
+        return new int[]{positionArray[0],positionArray[1],z};
     }
 
     /**
