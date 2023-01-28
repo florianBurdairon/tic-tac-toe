@@ -9,27 +9,47 @@ import java.net.*;
 import java.util.Random;
 
 /**
- *
+ * Class to create a server. It will manage two clients once they are connected and allow them to play a tic-tac-toe game.
+ * @author Bernard Alban
+ * @author Blumet Thomas
+ * @author Burdairon Florian
+ * @version 1
  */
 public class Server extends Thread {
+    /**
+     * Integer to keep the port of the connexion.
+     */
     private int port;
+
+    /**
+     * The first client to connect to the server, he will choose the grid dimensions.
+     */
     private CustomSocket client1;
+    /**
+     * The second client to connect to the server.
+     */
     private CustomSocket client2;
 
+    /**
+     * Boolean to know whose turn it is.
+     */
     private boolean isClient1Turn;
 
+    /**
+     * The grid of the game, at its actual state.
+     */
     private Grid grid = null;
 
     /**
-     *
+     * Creates a local server with the default port (9876) open.
      */
     public Server () {
         this(9876);
     }
 
     /**
-     *
-     * @param port
+     * Creates a local server with the chosen port open.
+     * @param port the port to open for the server.
      */
     public Server (int port) {
         this.port = port;
@@ -37,7 +57,8 @@ public class Server extends Thread {
     }
 
     /**
-     *
+     * Main function of the server, manage the connexion and dimensions selection.
+     * TODO: Implements a loop if players want to play again on the same network mode.
      */
     @Override
     public void run(){
@@ -62,8 +83,8 @@ public class Server extends Thread {
     }
 
     /**
-     *
-     * @return
+     * Returns the ip address of the server to be able to connect to it locally (on the same network).
+     * @return a String which is the ip address.
      */
     public String getIpAddress(){
         try {
@@ -121,6 +142,9 @@ public class Server extends Thread {
         }
     }
 
+    /**
+     * Run the game from beginning to end, without any regards to what is extern of the game
+     */
     public void startGame(){
         Random rand = new Random();
         NetworkMessage msgClient1;
@@ -157,6 +181,9 @@ public class Server extends Thread {
         client2.send(msgClient2);
     }
 
+    /**
+     * Ends the game.
+     */
     public void endGame(){
         NetworkMessage msgClient1 = new NetworkMessage(ProtocolAction.EndGame);
         NetworkMessage msgClient2 = new NetworkMessage(ProtocolAction.EndGame);

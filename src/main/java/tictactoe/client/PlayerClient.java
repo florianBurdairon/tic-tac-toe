@@ -13,21 +13,39 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
- * Class
+ * Class to create a player. Made to be used by a real user (human).
+ * @author Bernard Alban
+ * @author Blumet Thomas
+ * @author Burdairon Florian
+ * @version 1
  */
 public class PlayerClient extends Client{
 
+    /**
+     * The entry of the user buffer.
+     */
     private BufferedReader sysIn;
 
+    /**
+     * Creates a new Player Client, connected in local ("127.0.0.1") on the default port (9876).
+     */
     public PlayerClient(){
         this("127.0.0.1", 9876);
     }
 
+    /**
+     * Creates a new player client, connected on the given server ip and port.
+     * @param serverIP The server ip to connect to.
+     * @param port The port to connect to.
+     */
     public PlayerClient(String serverIP, int port) {
         super(serverIP, port);
         sysIn = new BufferedReader(new InputStreamReader(System.in));
     }
 
+    /**
+     * Main function of the player client. Connects the player to the server and then runs just like any client.
+     */
     @Override
     public void run(){
         try{
@@ -42,7 +60,7 @@ public class PlayerClient extends Client{
     }
 
     /**
-    * Function which send a message with the gridlength and his dimension to the server.
+    * Function which send a message with the grid length and his dimension to the server.
     **/
     @Override
     public NetworkMessage selectDimensions() {
@@ -68,6 +86,13 @@ public class PlayerClient extends Client{
         return new NetworkMessage(ProtocolAction.AnswerDimensions,param);
     }
 
+    /**
+     * Function on reception of "Start Game" by the server. Construct the adequate grid and get its role. If 'X', plays its turn.
+     * @param role The role given by the server ('X' or 'O').
+     * @param dimension The dimension of the grid (2D or 3D).
+     * @param size The size of the grid (its width).
+     * @return the message to answer to the server.
+     */
     @Override
     public NetworkMessage startGame(String role, String dimension, String size) {
         this.role = role;
@@ -80,6 +105,11 @@ public class PlayerClient extends Client{
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
+    /**
+     * Function on reception of "Play" by the server. If posOpponent is set, add the opponent choice to the display-only grid. Then, waits for user to choose its position. Finally, sends this position back to the server.
+     * @param posOpponent The opponent choice (its last turn).
+     * @return The new turn of this user.
+     */
     @Override
     public NetworkMessage play(String posOpponent) {
         if(posOpponent!=null){

@@ -5,24 +5,59 @@ import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
 import tictactoe.grid.Grid;
 
+/**
+ * Class to create a client. It needs to connect to a server.
+ * @author Bernard Alban
+ * @author Blumet Thomas
+ * @author Burdairon Florian
+ * @version 1
+ */
 public abstract class Client extends Thread{
+    /**
+     * Integer to keep the port of the connexion.
+     */
     protected int port;
+    /**
+     * String to keep the ip address of the connexion.
+     */
     protected String serverIP;
+    /**
+     * The server it is connected to.
+     */
     protected CustomSocket server;
+    /**
+     * The last received message from the server. Useful to asks again the user if an error occurs.
+     */
     protected NetworkMessage lastReceived;
 
+    /**
+     * The client-side grid, only used for display purpose.
+     */
     protected Grid grid;
+
+    /**
+     * The role of the player ('X' or 'O').
+     */
     protected String role;
 
+    /**
+     * Creates a client with the given server ip address and the port.
+     * @param serverIP The server ip address to connect the client to.
+     * @param port The port to connect the client to the server.
+     */
     public Client(String serverIP, int port){
         this.serverIP = serverIP;
         this.port = port;
         this.lastReceived = new NetworkMessage(ProtocolAction.NONE);
     }
 
+    /**
+     * Main function of the client. Waits for a server message and answer it.
+     */
     @Override
     public void run() {
 
+        // The client is still running
         boolean isRunning = true;
 
         while (isRunning) {
