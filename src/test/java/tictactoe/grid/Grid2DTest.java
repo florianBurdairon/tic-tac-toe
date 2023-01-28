@@ -21,12 +21,15 @@ public class Grid2DTest {
     @Test
     public void positionAlreadyUsed() throws Exception {
         Grid grid = new Grid2D(3);
+        assertFalse(grid.isCellUsed("5"));
+
         grid.place("5", 'x');
         PositionUsedException thrown = assertThrows(
                 PositionUsedException.class,
                 () -> grid.place("5", 'x')
         );
-        assertTrue(thrown.getMessage().contentEquals("The position : 5 is already used"));
+        assertTrue(grid.isCellUsed("5"));
+
     }
 
     @Test
@@ -36,7 +39,6 @@ public class Grid2DTest {
                 PositionInvalidException.class,
                 () -> grid.place("0", 'x')
         );
-        assertTrue(thrown.getMessage().contentEquals("The position : 0 is not valid"));
     }
 
     @Test

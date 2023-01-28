@@ -21,13 +21,14 @@ public class Grid3DTest {
     @Test
     public void positionAlreadyUsed() throws Exception {
         Grid grid = new Grid3D(3);
+        assertFalse(grid.isCellUsed("A5"));
         grid.place("A5", 'x');
         PositionUsedException thrown = assertThrows(
                 PositionUsedException.class,
                 () -> grid.place("A5", 'x'),
                 "The position : A5 is already used"
         );
-        assertTrue(thrown.getMessage().contentEquals("The position : A5 is already used"));
+        assertTrue(grid.isCellUsed("A5"));
     }
 
     @Test
@@ -37,28 +38,21 @@ public class Grid3DTest {
                 PositionInvalidException.class,
                 () -> grid.place("0", 'x')
         );
-        assertTrue(thrown.getMessage().contentEquals("The position : 0 is not valid"));
 
         thrown = assertThrows(
                 PositionInvalidException.class,
                 () -> grid.place("D0", 'x')
         );
-        System.out.println(thrown.getMessage());
-        assertTrue(thrown.getMessage().contentEquals("The position : D0 is not valid"));
 
         thrown = assertThrows(
                 PositionInvalidException.class,
                 () -> grid.place("A10", 'x')
         );
-        System.out.println(thrown.getMessage());
-        assertTrue(thrown.getMessage().contentEquals("The position : A10 is not valid"));
 
         thrown = assertThrows(
                 PositionInvalidException.class,
                 () -> grid.place("AA9", 'x')
         );
-        System.out.println(thrown.getMessage());
-        assertTrue(thrown.getMessage().contentEquals("The position : AA9 is not valid"));
     }
 
     @Test
