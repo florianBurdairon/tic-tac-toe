@@ -4,6 +4,8 @@ import tictactoe.*;
 import tictactoe.grid.Grid;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
+import tictactoe.grid.exceptions.PositionInvalidException;
+import tictactoe.grid.exceptions.PositionUsedException;
 
 import java.net.*;
 import java.util.Random;
@@ -39,6 +41,8 @@ public class Server extends Thread {
      * The grid of the game, at its actual state.
      */
     private Grid grid = null;
+
+    private String[] lastPlaceTurn = new String[2];
 
     /**
      * Creates a local server with the default port (9876) open.
@@ -76,6 +80,54 @@ public class Server extends Thread {
 
             startGame();
 
+            boolean isEndGame = false;
+
+            NetworkMessage msgClient1 = new NetworkMessage(ProtocolAction.NONE);
+            NetworkMessage msgClient2 = new NetworkMessage(ProtocolAction.NONE);
+            String[] paramClient1 = {};
+            String[] paramClient2 = {};
+            boolean isMsgClient1Used = true;
+            boolean isMsgClient2Used = true;
+
+            while(!isEndGame){
+                if(isMsgClient1Used){
+                    msgClient1 = client1.read();
+                    paramClient1 = msgClient1.getParameters();
+                }
+                if(isMsgClient2Used){
+                    msgClient2 = client2.read();
+                    paramClient2 = msgClient2.getParameters();
+                }
+                if(msgClient1.getProtocolAction() == ProtocolAction.Place && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
+                    verification(client1, paramClient1[0], paramClient1[1].charAt(0));
+                    isMsgClient1Used = true;
+                    isMsgClient2Used = false;
+                }
+                if(msgClient2.getProtocolAction() == ProtocolAction.Place && msgClient1.getProtocolAction() == ProtocolAction.WaitMessage){
+                    verification(client2, paramClient2[0], paramClient2[1].charAt(0));
+                    isMsgClient1Used = false;
+                    isMsgClient2Used = true;
+                }
+                if(msgClient1.getProtocolAction() == ProtocolAction.Confirmation && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
+                    play(client1, client2);
+                    isMsgClient1Used = true;
+                    isMsgClient2Used = true;
+                }
+                if(msgClient2.getProtocolAction() == ProtocolAction.Confirmation && msgClient1.getProtocolAction() == ProtocolAction.WaitMessage){
+                    play(client2, client1);
+                    isMsgClient1Used = true;
+                    isMsgClient2Used = true;
+                }
+                if(msgClient1.getProtocolAction() == ProtocolAction.Quit && msgClient2.getProtocolAction() == ProtocolAction.Quit){
+                    isEndGame = true;
+                }
+            }
+            msgClient1 = client1.read();
+            msgClient2 = client2.read();
+            if(msgClient1.getProtocolAction() == ProtocolAction.WaitMessage && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
+                client1.send(new NetworkMessage(ProtocolAction.Quit));
+                client2.send(new NetworkMessage(ProtocolAction.Quit));
+            }
 
         } catch (Exception e){
             e.printStackTrace();
@@ -191,9 +243,41 @@ public class Server extends Thread {
         client2.send(msgClient2);
     }
 
-    public void play(){
+    public void verification(CustomSocket client, String position, char role){
+        Grid tmp = grid;
+        try {
+            tmp.place(position, role);
+            lastPlaceTurn[0] = position;
+            lastPlaceTurn[1] = Character.toString(role);
+            client.send(new NetworkMessage(ProtocolAction.AskConfirmation));
+        } catch (PositionUsedException e) {
+            error(client, "Cette case est déjà utilisée.");
+        } catch (PositionInvalidException e) {
+            error(client, "La case n'est pas valide.");
+        }
+    }
 
-
+    public void play(CustomSocket client1, CustomSocket client2){
+        try {
+            ProtocolAction action;
+            String[] param;
+            boolean isWinner = grid.place(lastPlaceTurn[0], lastPlaceTurn[1].charAt(0));
+            if (isWinner){
+                action = ProtocolAction.EndGame;
+                param = lastPlaceTurn;
+                client1.send(new NetworkMessage(action, param));
+                client2.send(new NetworkMessage(action, param));
+            }
+            else{
+                param = lastPlaceTurn;
+                client1.send(new NetworkMessage(ProtocolAction.Validate, param));
+                client2.send(new NetworkMessage(ProtocolAction.Play, param));
+            }
+        } catch (PositionUsedException e) {
+            throw new RuntimeException(e);
+        } catch (PositionInvalidException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void validate(){

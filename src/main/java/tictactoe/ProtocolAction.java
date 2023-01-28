@@ -18,6 +18,7 @@ public enum ProtocolAction {
     Error,
     NetworkError,
     ResumeGame,
+    AskConfirmation,
 
     /**
      * Protocol actions send by the client
@@ -29,6 +30,7 @@ public enum ProtocolAction {
     AddAI,
     Quit,
     SaveAndQuit,
+    Confirmation,
 
     NONE;
 
@@ -46,13 +48,15 @@ public enum ProtocolAction {
             case Error: return 5;
             case NetworkError: return 6;
             case ResumeGame: return 7;
-            case AnswerDimensions: return 8;
-            case Place: return 9;
-            case WaitMessage: return 10;
-            case WaitPlayer: return 11;
-            case AddAI: return 12;
-            case Quit: return 13;
-            case SaveAndQuit: return 14;
+            case AskConfirmation: return 8;
+            case AnswerDimensions: return 9;
+            case Place: return 10;
+            case WaitMessage: return 11;
+            case WaitPlayer: return 12;
+            case AddAI: return 13;
+            case Quit: return 14;
+            case SaveAndQuit: return 15;
+            case Confirmation: return 16;
             case NONE:
             default: return -1;
         }
@@ -73,13 +77,16 @@ public enum ProtocolAction {
             case 5: return ProtocolAction.Error;
             case 6: return ProtocolAction.NetworkError;
             case 7: return ProtocolAction.ResumeGame;
-            case 8: return ProtocolAction.AnswerDimensions;
-            case 9: return ProtocolAction.Place;
-            case 10: return ProtocolAction.WaitMessage;
-            case 11: return ProtocolAction.WaitPlayer;
-            case 12: return ProtocolAction.AddAI;
-            case 13: return ProtocolAction.Quit;
-            case 14: return ProtocolAction.SaveAndQuit;
+            case 8: return ProtocolAction.AskConfirmation;
+            case 9: return ProtocolAction.AnswerDimensions;
+            case 10: return ProtocolAction.Place;
+            case 11: return ProtocolAction.WaitMessage;
+            case 12: return ProtocolAction.WaitPlayer;
+            case 13: return ProtocolAction.AddAI;
+            case 14: return ProtocolAction.Quit;
+            case 15: return ProtocolAction.SaveAndQuit;
+            case 16: return ProtocolAction.Confirmation;
+
             default: return ProtocolAction.NONE;
         }
     }
