@@ -64,15 +64,23 @@ public class Grid2D implements Grid {
                     out[y] += " "
                             + String.format("%1$" + log + "s", x+y*this.size+1);
                 }
-                else{
+                else if(gridWinner[x][y]){
                     out[y] += " "
                             //Add color green to display
-                            + (gridWinner[x][y] ? "\u001B[32m" : "")
+                            + ANSI_GREEN
                             //complete smaller number to be as long as the bigest number
                             + String.format("%1$" + log + "s", this.grid[x][y])
                             //end color
-                            + (gridWinner[x][y] ? "\u001B[0m" : "");
-
+                            + ANSI_RESET;
+                }
+                else {
+                    out[y] += " "
+                            //Add color yellow to x player and blue to o player
+                            + (this.grid[x][y] == 'x' ? ANSI_YELLOW : ANSI_BLUE)
+                            //complete smaller number to be as long as the bigest number
+                            + String.format("%1$" + log + "s", this.grid[x][y])
+                            //end color
+                            + ANSI_RESET;
                 }
             }
             out[y] += " |";
