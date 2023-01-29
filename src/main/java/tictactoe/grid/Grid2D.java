@@ -76,7 +76,7 @@ public class Grid2D implements Grid {
                 else {
                     out[y] += " "
                             //Add color yellow to x player and blue to o player
-                            + (this.grid[x][y] == 'x' ? ANSI_YELLOW : ANSI_BLUE)
+                            + (this.grid[x][y] == 'X' ? ANSI_YELLOW : ANSI_BLUE)
                             //complete smaller number to be as long as the bigest number
                             + String.format("%1$" + log + "s", this.grid[x][y])
                             //end color
