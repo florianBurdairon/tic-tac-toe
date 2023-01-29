@@ -93,6 +93,10 @@ public abstract class Client extends Thread{
                 case Play:
                     networkAnswer = play(parameters[0]);
                     break;
+                case Error:
+                    if(parameters[0].equals("La case n'est pas valide.") || parameters[0].equals("Cette case est déjà utilisée.")) networkAnswer = play(null);
+                    else networkAnswer = selectDimensions();
+                    break;
                 case AskConfirmation:
                     networkAnswer = confirmation();
                     break;
@@ -100,7 +104,7 @@ public abstract class Client extends Thread{
                     networkAnswer = validate(parameters[0]);
                     break;
                 case EndGame:
-                    networkAnswer = endGame(parameters[0], parameters[1].charAt(0));
+                    networkAnswer = endGame(parameters[0], parameters[1].charAt(0), parameters[2].charAt(0));
                     break;
                 case Quit:
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
@@ -123,6 +127,6 @@ public abstract class Client extends Thread{
     public abstract NetworkMessage waitPlayer();
     public abstract NetworkMessage addAI();
     public abstract NetworkMessage saveAndQuit();
-    public abstract NetworkMessage endGame(String position, char role);
+    public abstract NetworkMessage endGame(String position, char role, char isDraw);
 
 }

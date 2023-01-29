@@ -70,7 +70,7 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage endGame(String position, char role) {
+    public NetworkMessage endGame(String position, char role, char isDraw) {
         return new NetworkMessage(ProtocolAction.NONE);
     }
 }

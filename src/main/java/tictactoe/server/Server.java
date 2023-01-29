@@ -171,18 +171,21 @@ public class Server extends Thread {
             if (action == ProtocolAction.AnswerDimensions) {
                 String[] parameters = answer.getParameters();
                 //If the answer have 2 parameters and the size is greater than 2
-                if(parameters.length == 2 && Integer.parseInt(parameters[0]) > 2){
-                    //If the dimension is 2D
-                    if(Integer.parseInt(parameters[1]) == 2){
-                        grid = new Grid2D(Integer.parseInt(parameters[0]));
-                        isDimensionSelected = true;
-                    }
-                    //If the dimension is 3D
-                    else if(Integer.parseInt(parameters[1]) == 3){
-                        grid = new Grid3D(Integer.parseInt(parameters[0]));
-                        isDimensionSelected = true;
+                try{
+                    if(parameters.length == 2 && Integer.parseInt(parameters[0]) > 2){
+                        //If the dimension is 2D
+                        if(Integer.parseInt(parameters[1]) == 2){
+                            grid = new Grid2D(Integer.parseInt(parameters[0]));
+                            isDimensionSelected = true;
+                        }
+                        //If the dimension is 3D
+                        else if(Integer.parseInt(parameters[1]) == 3){
+                            grid = new Grid3D(Integer.parseInt(parameters[0]));
+                            isDimensionSelected = true;
+                        }
                     }
                 }
+                catch (NumberFormatException e){}
             }
             //If the client1 didn't answer correctly the server send an error message
             if(!isDimensionSelected) {
@@ -258,17 +261,22 @@ public class Server extends Thread {
     public boolean play(CustomSocket client1, CustomSocket client2){
         try {
             ProtocolAction action;
-            String[] param;
             boolean isWinner = grid.place(lastPlaceTurn[0], lastPlaceTurn[1].charAt(0));
-            if (isWinner){
+            int nbCellFree = grid.getRemainingCells();
+            if (isWinner || nbCellFree == 0){
+                String[] param = new String[3];
                 action = ProtocolAction.EndGame;
-                param = lastPlaceTurn;
+                param[0] = lastPlaceTurn[0];
+                param[1] = lastPlaceTurn[1];
+                param[2] = "0";
+                if (!isWinner && nbCellFree == 0) param[2] = "1";
                 client1.send(new NetworkMessage(action, param));
                 Thread.sleep(200);
                 client2.send(new NetworkMessage(action, param));
-                return isWinner;
+                return isWinner || nbCellFree == 0;
             }
             else{
+                String[] param;
                 param = lastPlaceTurn;
                 client1.send(new NetworkMessage(ProtocolAction.Validate, param));
                 Thread.sleep(1000);

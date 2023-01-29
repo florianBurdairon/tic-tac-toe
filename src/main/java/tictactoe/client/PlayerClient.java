@@ -153,7 +153,7 @@ public class PlayerClient extends Client{
             try {
                 System.out.println("Etes-vous sûr de vouloir jouer ici ?");
                 String confirm = sysIn.readLine();
-                if(confirm.toLowerCase().equals("oui")){
+                if(confirm.equalsIgnoreCase("oui")){
                     return new NetworkMessage(ProtocolAction.Confirmation);
                 }
                 else{
@@ -198,7 +198,7 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage endGame(String position, char role) {
+    public NetworkMessage endGame(String position, char role, char isDraw) {
         try {
             grid.place(position, role);
         } catch (PositionUsedException e) {
@@ -206,12 +206,17 @@ public class PlayerClient extends Client{
         } catch (PositionInvalidException e) {
             throw new RuntimeException(e);
         }
-        if (this.role.charAt(0) == role){
-            System.out.println("Joueur " + this.role + " : Victoire !");
+        String out = "Joueur " + this.role + " : ";
+        if (isDraw == '1'){
+            out += "Egalité...";
+        }
+        else if (this.role.charAt(0) == role){
+            out += "Victoire !";
         }
         else{
-            System.out.println("Joueur " + this.role + " : Défaite...");
+            out += "Défaite...";
         }
+        System.out.println(out);
         grid.display();
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
