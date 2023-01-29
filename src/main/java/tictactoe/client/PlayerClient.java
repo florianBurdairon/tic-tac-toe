@@ -114,7 +114,7 @@ public class PlayerClient extends Client{
     public NetworkMessage play(String posOpponent) {
         if(posOpponent!=null){
             char opponentRole;
-            if(role=="X") opponentRole = 'O';
+            if(role.equals("X")) opponentRole = 'O';
             else opponentRole = 'X';
             try {
                 grid.place(posOpponent, opponentRole);
@@ -124,7 +124,7 @@ public class PlayerClient extends Client{
                 throw new RuntimeException(e);
             }
         }
-
+        System.out.println("A votre tour joueur "+role);
         grid.display();
 
         String[] param = new String[2];
@@ -207,10 +207,10 @@ public class PlayerClient extends Client{
             throw new RuntimeException(e);
         }
         if (this.role.charAt(0) == role){
-            System.out.println("Victoire !");
+            System.out.println("Joueur " + this.role + " : Victoire !");
         }
         else{
-            System.out.println("Défaite...");
+            System.out.println("Joueur " + this.role + " : Défaite...");
         }
         grid.display();
         return new NetworkMessage(ProtocolAction.WaitMessage);

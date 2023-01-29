@@ -105,12 +105,13 @@ public abstract class Client extends Thread{
                 case Quit:
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     isRunning = false;
+                    System.out.println("Fin de la partie");
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     break;
             }
 
-            server.send(networkAnswer);
+            if (isRunning) server.send(networkAnswer);
         }
     }
 

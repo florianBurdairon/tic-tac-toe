@@ -109,17 +109,14 @@ public class Server extends Thread {
                     isMsgClient2Used = true;
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Confirmation && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
-                    play(client1, client2);
+                    isEndGame = play(client1, client2);
                     isMsgClient1Used = true;
                     isMsgClient2Used = true;
                 }
                 if(msgClient2.getProtocolAction() == ProtocolAction.Confirmation && msgClient1.getProtocolAction() == ProtocolAction.WaitMessage){
-                    play(client2, client1);
+                    isEndGame = play(client2, client1);
                     isMsgClient1Used = true;
                     isMsgClient2Used = true;
-                }
-                if(msgClient1.getProtocolAction() == ProtocolAction.Quit && msgClient2.getProtocolAction() == ProtocolAction.Quit){
-                    isEndGame = true;
                 }
             }
             msgClient1 = client1.read();
@@ -252,14 +249,13 @@ public class Server extends Thread {
             }
             else{
                 error(client, "Cette case est déjà utilisée.");
-
             }
         } catch (PositionInvalidException e) {
             error(client, "La case n'est pas valide.");
         }
     }
 
-    public void play(CustomSocket client1, CustomSocket client2){
+    public boolean play(CustomSocket client1, CustomSocket client2){
         try {
             ProtocolAction action;
             String[] param;
@@ -268,18 +264,24 @@ public class Server extends Thread {
                 action = ProtocolAction.EndGame;
                 param = lastPlaceTurn;
                 client1.send(new NetworkMessage(action, param));
+                Thread.sleep(200);
                 client2.send(new NetworkMessage(action, param));
+                return isWinner;
             }
             else{
                 param = lastPlaceTurn;
                 client1.send(new NetworkMessage(ProtocolAction.Validate, param));
+                Thread.sleep(1000);
                 client2.send(new NetworkMessage(ProtocolAction.Play, param));
             }
         } catch (PositionUsedException e) {
             throw new RuntimeException(e);
         } catch (PositionInvalidException e) {
             throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        return false;
     }
 
     public void validate(){
