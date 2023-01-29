@@ -25,22 +25,28 @@ public class Grid2D implements Grid {
     private final int size;
 
     /**
+     * Remaining cell to be played
+     */
+    private int remainingCells;
+
+    /**
      * @param size size of the grid
      */
     public Grid2D(int size) {
         this.size = size;
         this.grid = new char[size][size];
         this.gridWinner = new boolean[size][size];
+        this.remainingCells = size*size;
     }
 
     /**
-     * @param grid grid to copy
+     * @return count remaining cell
      */
-    public Grid2D(char[][] grid) {
-        this.grid = grid;
-        this.size = grid.length;
-        this.gridWinner = new boolean[this.size][this.size];
+    @Override
+    public int getRemainingCells() {
+        return this.remainingCells;
     }
+
 
     /**
      * @return lines representing the grid
@@ -58,15 +64,23 @@ public class Grid2D implements Grid {
                     out[y] += " "
                             + String.format("%1$" + log + "s", x+y*this.size+1);
                 }
-                else{
+                else if(gridWinner[x][y]){
                     out[y] += " "
                             //Add color green to display
-                            + (gridWinner[x][y] ? "\u001B[32m" : "")
+                            + ANSI_GREEN
                             //complete smaller number to be as long as the bigest number
                             + String.format("%1$" + log + "s", this.grid[x][y])
                             //end color
-                            + (gridWinner[x][y] ? "\u001B[0m" : "");
-
+                            + ANSI_RESET;
+                }
+                else {
+                    out[y] += " "
+                            //Add color yellow to x player and blue to o player
+                            + (this.grid[x][y] == 'x' ? ANSI_YELLOW : ANSI_BLUE)
+                            //complete smaller number to be as long as the bigest number
+                            + String.format("%1$" + log + "s", this.grid[x][y])
+                            //end color
+                            + ANSI_RESET;
                 }
             }
             out[y] += " |";
@@ -220,6 +234,7 @@ public class Grid2D implements Grid {
         if (this.grid[x][y] != '\0')
             throw new PositionUsedException();
         this.grid[x][y] = player;
+        this.remainingCells--;
         return checkColumns(player) | checkRows(player) | checkDiagonals(player);
     }
 
@@ -268,6 +283,8 @@ public class Grid2D implements Grid {
             throw new PositionInvalidException();
         }
     }
+
+
 
     /**
      * Print 2D grid

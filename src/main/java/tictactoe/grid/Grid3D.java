@@ -33,22 +33,23 @@ public class Grid3D implements Grid {
     }
 
     /**
-     * @param grid grid to copy
-     */
-    public Grid3D(char[][][] grid) {
-        this.size = grid.length;
-        this.grid = new Grid2D[this.size];
-        for(int i =0 ; i < this.size; i++){
-            this.grid[i] = new Grid2D(grid[i]);
-        }
-    }
-
-    /**
      * @return size of the grid
      */
     @Override
     public int getSize() {
         return this.size;
+    }
+
+    /**
+     * @return count remaining cell
+     */
+    @Override
+    public int getRemainingCells() {
+        int sum  = 0;
+        for (Grid grid:this.grid) {
+            sum+= grid.getRemainingCells();
+        }
+        return  sum;
     }
 
     /**
