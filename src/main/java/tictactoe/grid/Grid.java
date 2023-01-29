@@ -33,6 +33,11 @@ public interface Grid extends Displayable {
     public int getSize();
 
     /**
+     * @return count remaining cell
+     */
+    public int getRemainingCells();
+
+    /**
      * @return lines representing the grid
      */
     public String[] getGridAsStrings();

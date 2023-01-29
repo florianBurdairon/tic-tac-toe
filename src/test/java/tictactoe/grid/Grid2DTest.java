@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class Grid2DTest {
 
     @Test
-    public void positionValid() throws Exception {
+    public void position_valid() throws Exception {
         Grid grid = new Grid2D(3);
         assertFalse(grid.place("1", 'x'));
         assertFalse(grid.place("5", 'x'));
     }
 
     @Test
-    public void positionAlreadyUsed() throws Exception {
+    public void position_already_used() throws Exception {
         Grid grid = new Grid2D(3);
         assertFalse(grid.isCellUsed("5"));
 
@@ -33,7 +33,7 @@ public class Grid2DTest {
     }
 
     @Test
-    public void positionInvalid() throws Exception {
+    public void position_invalid() throws Exception {
         Grid grid = new Grid2D(3);
         PositionInvalidException thrown = assertThrows(
                 PositionInvalidException.class,
@@ -141,5 +141,20 @@ public class Grid2DTest {
         assertTrue(((Grid2D)grid).getCellStatus(2,0));
         assertTrue(((Grid2D)grid).getCellStatus(0,1));
         assertTrue(((Grid2D)grid).getCellStatus(0,2));
+    }
+
+    @Test
+    public void check_remaining_cells_count() throws Exception {
+        int size = 3;
+        Grid grid = new Grid2D(size);
+        assertEquals(size*size, grid.getRemainingCells());
+        grid.place("3",'x');
+        assertEquals(size*size-1, grid.getRemainingCells());
+        grid.place("1",'x');
+        assertEquals(size*size-2, grid.getRemainingCells());
+        grid.place("2",'x');
+        assertEquals(size*size-3, grid.getRemainingCells());
+        grid.place("4",'x');
+        assertEquals(size*size-4, grid.getRemainingCells());
     }
 }

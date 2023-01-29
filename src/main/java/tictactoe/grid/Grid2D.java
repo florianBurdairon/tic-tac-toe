@@ -25,22 +25,28 @@ public class Grid2D implements Grid {
     private final int size;
 
     /**
+     * Remaining cell to be played
+     */
+    private int remainingCells;
+
+    /**
      * @param size size of the grid
      */
     public Grid2D(int size) {
         this.size = size;
         this.grid = new char[size][size];
         this.gridWinner = new boolean[size][size];
+        this.remainingCells = size*size;
     }
 
     /**
-     * @param grid grid to copy
+     * @return count remaining cell
      */
-    public Grid2D(char[][] grid) {
-        this.grid = grid;
-        this.size = grid.length;
-        this.gridWinner = new boolean[this.size][this.size];
+    @Override
+    public int getRemainingCells() {
+        return this.remainingCells;
     }
+
 
     /**
      * @return lines representing the grid
@@ -220,6 +226,7 @@ public class Grid2D implements Grid {
         if (this.grid[x][y] != '\0')
             throw new PositionUsedException();
         this.grid[x][y] = player;
+        this.remainingCells--;
         return checkColumns(player) | checkRows(player) | checkDiagonals(player);
     }
 
@@ -268,6 +275,8 @@ public class Grid2D implements Grid {
             throw new PositionInvalidException();
         }
     }
+
+
 
     /**
      * Print 2D grid
