@@ -114,7 +114,7 @@ public class PlayerClient extends Client{
     public NetworkMessage play(String posOpponent) {
         if(posOpponent!=null){
             char opponentRole;
-            if(role=="X") opponentRole = 'O';
+            if(role.equals("X")) opponentRole = 'O';
             else opponentRole = 'X';
             try {
                 grid.place(posOpponent, opponentRole);
@@ -124,7 +124,7 @@ public class PlayerClient extends Client{
                 throw new RuntimeException(e);
             }
         }
-
+        System.out.println("A votre tour joueur "+role);
         grid.display();
 
         String[] param = new String[2];
@@ -148,9 +148,35 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage validate() {
-        return new NetworkMessage(ProtocolAction.NONE);
+    public NetworkMessage confirmation() {
+        while(true){
+            try {
+                System.out.println("Etes-vous sûr de vouloir jouer ici ?");
+                String confirm = sysIn.readLine();
+                if(confirm.toLowerCase().equals("oui")){
+                    return new NetworkMessage(ProtocolAction.Confirmation);
+                }
+                else{
+                    return play(null);
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur de saisie");
+            }
+        }
+    }
 
+
+    @Override
+    public NetworkMessage validate(String position) {
+        try {
+            grid.place(position, role.charAt(0));
+        } catch (PositionUsedException e) {
+            throw new RuntimeException(e);
+        } catch (PositionInvalidException e) {
+            throw new RuntimeException(e);
+        }
+        grid.display();
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     @Override
@@ -166,14 +192,27 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage quit() {
+    public NetworkMessage saveAndQuit() {
         return new NetworkMessage(ProtocolAction.NONE);
 
     }
 
     @Override
-    public NetworkMessage saveAndQuit() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
+    public NetworkMessage endGame(String position, char role) {
+        try {
+            grid.place(position, role);
+        } catch (PositionUsedException e) {
+            throw new RuntimeException(e);
+        } catch (PositionInvalidException e) {
+            throw new RuntimeException(e);
+        }
+        if (this.role.charAt(0) == role){
+            System.out.println("Joueur " + this.role + " : Victoire !");
+        }
+        else{
+            System.out.println("Joueur " + this.role + " : Défaite...");
+        }
+        grid.display();
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 }

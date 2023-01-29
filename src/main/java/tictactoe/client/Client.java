@@ -93,23 +93,36 @@ public abstract class Client extends Thread{
                 case Play:
                     networkAnswer = play(parameters[0]);
                     break;
+                case AskConfirmation:
+                    networkAnswer = confirmation();
+                    break;
                 case Validate:
-                    networkAnswer = validate();
+                    networkAnswer = validate(parameters[0]);
+                    break;
+                case EndGame:
+                    networkAnswer = endGame(parameters[0], parameters[1].charAt(0));
+                    break;
+                case Quit:
+                    networkAnswer = new NetworkMessage(ProtocolAction.NONE);
+                    isRunning = false;
+                    System.out.println("Fin de la partie");
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     break;
             }
 
-            server.send(networkAnswer);
+            if (isRunning) server.send(networkAnswer);
         }
     }
 
     public abstract NetworkMessage selectDimensions();
     public abstract NetworkMessage startGame(String role, String dimension, String size);
     public abstract NetworkMessage play(String posOpponent);
-    public abstract NetworkMessage validate();
+    public abstract NetworkMessage confirmation();
+    public abstract NetworkMessage validate(String position);
     public abstract NetworkMessage waitPlayer();
     public abstract NetworkMessage addAI();
-    public abstract NetworkMessage quit();
     public abstract NetworkMessage saveAndQuit();
+    public abstract NetworkMessage endGame(String position, char role);
+
 }

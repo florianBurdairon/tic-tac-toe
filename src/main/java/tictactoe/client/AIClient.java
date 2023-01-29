@@ -41,7 +41,12 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage validate() {
+    public NetworkMessage confirmation() {
+        return new NetworkMessage(ProtocolAction.NONE);
+    }
+
+    @Override
+    public NetworkMessage validate(String position) {
         return new NetworkMessage(ProtocolAction.NONE);
 
     }
@@ -59,14 +64,13 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage quit() {
+    public NetworkMessage saveAndQuit() {
         return new NetworkMessage(ProtocolAction.NONE);
 
     }
 
     @Override
-    public NetworkMessage saveAndQuit() {
+    public NetworkMessage endGame(String position, char role) {
         return new NetworkMessage(ProtocolAction.NONE);
-
     }
 }
