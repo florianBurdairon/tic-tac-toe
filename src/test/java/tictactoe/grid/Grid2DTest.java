@@ -44,15 +44,17 @@ public class Grid2DTest {
     @Test
     public void no_winner() throws Exception {
         Grid grid = new Grid2D(3);
-        assertFalse( grid.place("1",'x'));
+        assertFalse( grid.place("1",'o'));
         assertFalse( grid.place("2",'x'));
-        assertFalse( grid.place("6",'x'));
-        assertFalse( grid.place("8",'x'));
         assertFalse( grid.place("3",'o'));
-        assertFalse( grid.place("4",'o'));
+
+        assertFalse( grid.place("4",'x'));
         assertFalse( grid.place("5",'o'));
-        assertFalse( grid.place("7",'o'));
-        assertFalse( grid.place("9",'o'));
+        assertFalse( grid.place("6",'x'));
+
+        assertFalse( grid.place("7",'x'));
+        assertFalse( grid.place("8",'o'));
+        assertFalse( grid.place("9",'x'));
     }
 
     @Test
@@ -140,6 +142,30 @@ public class Grid2DTest {
         assertTrue(((Grid2D)grid).getCellStatus(1,0));
         assertTrue(((Grid2D)grid).getCellStatus(2,0));
         assertTrue(((Grid2D)grid).getCellStatus(0,1));
+        assertTrue(((Grid2D)grid).getCellStatus(0,2));
+    }
+
+    @Test
+    public void check_diagonal_1() throws Exception {
+        Grid grid = new Grid2D(3);
+        assertFalse( grid.place("1",'x'));
+        assertFalse( grid.place("5",'x'));
+        assertTrue( grid.place("9",'x'));
+
+        assertTrue(((Grid2D)grid).getCellStatus(0,0));
+        assertTrue(((Grid2D)grid).getCellStatus(1,1));
+        assertTrue(((Grid2D)grid).getCellStatus(2,2));
+    }
+
+    @Test
+    public void check_diagonal_2() throws Exception {
+        Grid grid = new Grid2D(3);
+        assertFalse( grid.place("3",'x'));
+        assertFalse( grid.place("5",'x'));
+        assertTrue( grid.place("7",'x'));
+
+        assertTrue(((Grid2D)grid).getCellStatus(2,0));
+        assertTrue(((Grid2D)grid).getCellStatus(1,1));
         assertTrue(((Grid2D)grid).getCellStatus(0,2));
     }
 
