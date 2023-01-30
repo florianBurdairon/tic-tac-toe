@@ -3,6 +3,7 @@ package tictactoe.client;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.Text;
 import tictactoe.grid.Grid;
 
 /**
@@ -70,14 +71,6 @@ public abstract class Client extends Thread{
                 networkMessage = new NetworkMessage(ProtocolAction.NONE);
             }
 
-            // If the message is an error
-            if (networkMessage.getProtocolAction() != ProtocolAction.Error && networkMessage.getProtocolAction() != ProtocolAction.NetworkError){
-                lastReceived = networkMessage;
-            } else {
-                System.out.println(networkMessage.getParameters()[0]);
-                networkMessage = lastReceived;
-            }
-
             // The message to send back
             NetworkMessage networkAnswer;
             String[] parameters = networkMessage.getParameters();
@@ -93,6 +86,11 @@ public abstract class Client extends Thread{
                 case Play:
                     networkAnswer = play(parameters[0]);
                     break;
+                case Error:
+                    System.out.println(Text.error(parameters[0]));
+                    if(parameters[0].equals("0")) networkAnswer = selectDimensions();
+                    else networkAnswer = play(null);
+                    break;
                 case AskConfirmation:
                     networkAnswer = confirmation();
                     break;
@@ -100,12 +98,21 @@ public abstract class Client extends Thread{
                     networkAnswer = validate(parameters[0]);
                     break;
                 case EndGame:
-                    networkAnswer = endGame(parameters[0], parameters[1].charAt(0));
+                    networkAnswer = endGame(parameters[0], parameters[1].charAt(0), parameters[2].charAt(0));
+                    break;
+                case OpponentDisconnected:
+                    networkAnswer = opponentDisconnected();
+                    break;
+                case NetworkError:
+                    networkAnswer = new NetworkMessage(ProtocolAction.NONE);
+                    isRunning = false;
+                    System.out.println(Text.selfDisconnected());
                     break;
                 case Quit:
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     isRunning = false;
-                    System.out.println("Fin de la partie");
+                    server.disconnect();
+                    System.out.println(Text.endGame());
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     break;
@@ -120,9 +127,7 @@ public abstract class Client extends Thread{
     public abstract NetworkMessage play(String posOpponent);
     public abstract NetworkMessage confirmation();
     public abstract NetworkMessage validate(String position);
-    public abstract NetworkMessage waitPlayer();
-    public abstract NetworkMessage addAI();
-    public abstract NetworkMessage saveAndQuit();
-    public abstract NetworkMessage endGame(String position, char role);
+    public abstract NetworkMessage endGame(String position, char role, char isDraw);
+    public abstract NetworkMessage opponentDisconnected();
 
 }

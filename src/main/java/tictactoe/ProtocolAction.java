@@ -15,10 +15,17 @@ public enum ProtocolAction {
     EndGame,
     Play, // Position played by the opponent
     Validate,
+    /**
+     * Errors list :
+     *  - 0:Error on dimensions selection
+     *  - 1:Error on play input -> Place already used
+     *  - 2:Error on play input -> Place is not valid
+     */
     Error,
     NetworkError,
     ResumeGame,
     AskConfirmation,
+    OpponentDisconnected,
 
     /**
      * Protocol actions send by the client
@@ -26,10 +33,7 @@ public enum ProtocolAction {
     AnswerDimensions, // GridLength , GridDimension
     Place,
     WaitMessage,
-    WaitPlayer,
-    AddAI,
     Quit,
-    SaveAndQuit,
     Confirmation,
 
     NONE;
@@ -39,27 +43,24 @@ public enum ProtocolAction {
      * @return the index of the protocol action
      */
     public int getValue(){
-        switch (this){
-            case SelectDimensions: return 0;
-            case StartGame: return 1;
-            case EndGame: return 2;
-            case Play: return 3;
-            case Validate: return 4;
-            case Error: return 5;
-            case NetworkError: return 6;
-            case ResumeGame: return 7;
-            case AskConfirmation: return 8;
-            case AnswerDimensions: return 9;
-            case Place: return 10;
-            case WaitMessage: return 11;
-            case WaitPlayer: return 12;
-            case AddAI: return 13;
-            case Quit: return 14;
-            case SaveAndQuit: return 15;
-            case Confirmation: return 16;
-            case NONE:
-            default: return -1;
-        }
+        return switch (this) {
+            case SelectDimensions -> 0;
+            case StartGame -> 1;
+            case EndGame -> 2;
+            case Play -> 3;
+            case Validate -> 4;
+            case Error -> 5;
+            case NetworkError -> 6;
+            case ResumeGame -> 7;
+            case AskConfirmation -> 8;
+            case OpponentDisconnected -> 9;
+            case AnswerDimensions -> 10;
+            case Place -> 11;
+            case WaitMessage -> 12;
+            case Quit -> 13;
+            case Confirmation -> 14;
+            default -> -1;
+        };
     }
 
     /**
@@ -68,26 +69,23 @@ public enum ProtocolAction {
      * @return The protocol action corresponding
      */
     public static ProtocolAction fromInt(int id) {
-        switch (id){
-            case 0: return ProtocolAction.SelectDimensions;
-            case 1: return ProtocolAction.StartGame;
-            case 2: return ProtocolAction.EndGame;
-            case 3: return ProtocolAction.Play;
-            case 4: return ProtocolAction.Validate;
-            case 5: return ProtocolAction.Error;
-            case 6: return ProtocolAction.NetworkError;
-            case 7: return ProtocolAction.ResumeGame;
-            case 8: return ProtocolAction.AskConfirmation;
-            case 9: return ProtocolAction.AnswerDimensions;
-            case 10: return ProtocolAction.Place;
-            case 11: return ProtocolAction.WaitMessage;
-            case 12: return ProtocolAction.WaitPlayer;
-            case 13: return ProtocolAction.AddAI;
-            case 14: return ProtocolAction.Quit;
-            case 15: return ProtocolAction.SaveAndQuit;
-            case 16: return ProtocolAction.Confirmation;
-
-            default: return ProtocolAction.NONE;
-        }
+        return switch (id) {
+            case 0 -> ProtocolAction.SelectDimensions;
+            case 1 -> ProtocolAction.StartGame;
+            case 2 -> ProtocolAction.EndGame;
+            case 3 -> ProtocolAction.Play;
+            case 4 -> ProtocolAction.Validate;
+            case 5 -> ProtocolAction.Error;
+            case 6 -> ProtocolAction.NetworkError;
+            case 7 -> ProtocolAction.ResumeGame;
+            case 8 -> ProtocolAction.AskConfirmation;
+            case 9 -> ProtocolAction.OpponentDisconnected;
+            case 10 -> ProtocolAction.AnswerDimensions;
+            case 11 -> ProtocolAction.Place;
+            case 12 -> ProtocolAction.WaitMessage;
+            case 13 -> ProtocolAction.Quit;
+            case 14 -> ProtocolAction.Confirmation;
+            default -> ProtocolAction.NONE;
+        };
     }
 }

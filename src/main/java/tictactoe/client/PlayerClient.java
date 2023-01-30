@@ -3,6 +3,7 @@ package tictactoe.client;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.Text;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
@@ -50,12 +51,14 @@ public class PlayerClient extends Client{
     public void run(){
         try{
             server = new CustomSocket(new Socket(this.serverIP, this.port), true);
-            System.out.println("Connecté");
-
-            super.run();
-
+            System.out.println(Text.connected(true));
         } catch (Exception e) {
-            System.out.println("Error on connection to server");
+            System.out.println(Text.connected(false));
+        }
+        try {
+            super.run();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -70,9 +73,9 @@ public class PlayerClient extends Client{
         String GridLength;
         String GridDimension;
         try {
-            System.out.print("Choisissez la taille de la grille : ");
+            System.out.print(Text.askWidth());
             GridLength = sysIn.readLine();
-            System.out.print("Choisissez la dimension de la grille : ");
+            System.out.print(Text.askDimension());
             GridDimension= sysIn.readLine();
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +127,7 @@ public class PlayerClient extends Client{
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("A votre tour joueur "+role);
+        System.out.println(Text.turn(role));
         grid.display();
 
         String[] param = new String[2];
@@ -133,12 +136,11 @@ public class PlayerClient extends Client{
         boolean isEntered = false;
         while(!isEntered){
             try {
-                if(grid.getClass() == Grid3D.class) System.out.print("Choisissez une case où jouer (Ex: A1) : ");
-                else System.out.print("Choisissez une case où jouer (Ex: 1) : ");
+                System.out.println(Text.askPlay(grid.getClass() == Grid3D.class));
                 position = sysIn.readLine();
                 isEntered = true;
             } catch (Exception e) {
-                System.out.println("Erreur de saisie");
+                System.out.println(Text.error("s"));
             }
         }
         param[0]=position;
@@ -151,16 +153,16 @@ public class PlayerClient extends Client{
     public NetworkMessage confirmation() {
         while(true){
             try {
-                System.out.println("Etes-vous sûr de vouloir jouer ici ?");
+                System.out.println(Text.askConfirm());
                 String confirm = sysIn.readLine();
-                if(confirm.toLowerCase().equals("oui")){
+                if(confirm.equalsIgnoreCase("oui")){
                     return new NetworkMessage(ProtocolAction.Confirmation);
                 }
                 else{
                     return play(null);
                 }
             } catch (Exception e) {
-                System.out.println("Erreur de saisie");
+                System.out.println(Text.error("s"));
             }
         }
     }
@@ -180,25 +182,7 @@ public class PlayerClient extends Client{
     }
 
     @Override
-    public NetworkMessage waitPlayer() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
-    public NetworkMessage addAI() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
-    public NetworkMessage saveAndQuit() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
-    public NetworkMessage endGame(String position, char role) {
+    public NetworkMessage endGame(String position, char role, char isDraw) {
         try {
             grid.place(position, role);
         } catch (PositionUsedException e) {
@@ -206,13 +190,33 @@ public class PlayerClient extends Client{
         } catch (PositionInvalidException e) {
             throw new RuntimeException(e);
         }
-        if (this.role.charAt(0) == role){
-            System.out.println("Joueur " + this.role + " : Victoire !");
+        /*String out = "Joueur " + this.role + " : ";
+        if (isDraw == '1'){
+            out += "Egalité...";
+        }
+        else if (this.role.charAt(0) == role){
+            out += "Victoire !";
         }
         else{
-            System.out.println("Joueur " + this.role + " : Défaite...");
-        }
+            out += "Défaite...";
+        }*/
+        System.out.println(Text.results(this.role, this.role.charAt(0) == role, isDraw == '1'));
         grid.display();
         return new NetworkMessage(ProtocolAction.WaitMessage);
+    }
+
+    @Override
+    public NetworkMessage opponentDisconnected() {
+        System.out.println(Text.opponentDisconnected());
+        while (true){
+            System.out.println(Text.askSaveOrQuit());
+            try {
+                String choix = sysIn.readLine();
+                String[] param = {choix};
+                return new NetworkMessage(ProtocolAction.Quit, param);
+            } catch (Exception e) {
+                System.out.println(Text.error("s"));
+            }
+        }
     }
 }

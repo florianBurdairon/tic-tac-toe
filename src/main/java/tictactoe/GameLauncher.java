@@ -95,6 +95,7 @@ public class GameLauncher {
                 server_local.start();
                 System.out.println("Lancement du serveur en mode local...");
                 TimeUnit.SECONDS.sleep(1);
+                System.out.println("Serveur en attente de client(s) !");
 
                 // Starting first player
                 Client client_local_1 = new PlayerClient();
@@ -115,6 +116,7 @@ public class GameLauncher {
                 server_host.start();
                 System.out.println("Lancement du serveur en mode hébergeur...");
                 TimeUnit.SECONDS.sleep(1);
+                System.out.println("Serveur en attente de client(s) !");
                 System.out.println("Adresse IP du serveur : " + server_host.getIpAddress());
                 PlayerClient client_host = new PlayerClient("127.0.0.1", 9876);
                 client_host.start();
@@ -136,6 +138,7 @@ public class GameLauncher {
                 server.start();
                 System.out.println("Lancement du serveur en mode autonome...");
                 TimeUnit.SECONDS.sleep(1);
+                System.out.println("Serveur en attente de client(s) !");
                 System.out.println("Adresse IP du serveur : " + server.getIpAddress());
                 break;
         }
