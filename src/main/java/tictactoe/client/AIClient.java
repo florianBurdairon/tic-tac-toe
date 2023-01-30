@@ -60,25 +60,12 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage waitPlayer() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
-    public NetworkMessage addAI() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
-    public NetworkMessage saveAndQuit() {
-        return new NetworkMessage(ProtocolAction.NONE);
-
-    }
-
-    @Override
     public NetworkMessage endGame(String position, char role, char isDraw) {
         return new NetworkMessage(ProtocolAction.WaitMessage);
+    }
+
+    @Override
+    public NetworkMessage opponentDisconnected() {
+        return new NetworkMessage(ProtocolAction.NONE);
     }
 }

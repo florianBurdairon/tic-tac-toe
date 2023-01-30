@@ -1,7 +1,7 @@
 package tictactoe.grid;
 
 /**
- * interface Displayable of every components that need to be displayed
+ * interface Displayable of every component that need to be displayed
  * @author Halvick Thomas
  * @version 1.1
  */
@@ -25,11 +25,11 @@ public interface Displayable {
     /**
      * ANSI yellow code
      */
-    String ANSI_YELLOW = "\u001B[33m";
+    String ANSI_YELLOW = "\u001B[93m";
     /**
      * ANSI blue code
      */
-    String ANSI_BLUE = "\u001B[34m";
+    String ANSI_BLUE = "\u001B[94m";
     /**
      * ANSI purple code
      */
@@ -41,7 +41,7 @@ public interface Displayable {
     /**
      * ANSI white code
      */
-    String ANSI_WHITE = "\u001B[37m";
+    String ANSI_WHITE = "\u001B[97m";
     /**
      * Print
      */

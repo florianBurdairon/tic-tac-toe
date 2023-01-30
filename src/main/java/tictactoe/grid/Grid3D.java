@@ -3,12 +3,14 @@ package tictactoe.grid;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.io.Serializable;
+
 /**
  * Class grid3D
  * @author Halvick Thomas
  * @version 1
  */
-public class Grid3D implements Grid {
+public class Grid3D implements Grid, Serializable {
 
     /**
      * 3d grid
