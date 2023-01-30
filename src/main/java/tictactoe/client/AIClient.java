@@ -5,6 +5,8 @@ import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
+import tictactoe.grid.exceptions.PositionInvalidException;
+import tictactoe.grid.exceptions.PositionUsedException;
 
 public class AIClient extends Client{
 
@@ -42,13 +44,19 @@ public class AIClient extends Client{
 
     @Override
     public NetworkMessage confirmation() {
-        return new NetworkMessage(ProtocolAction.NONE);
+        return new NetworkMessage(ProtocolAction.Confirmation);
     }
 
     @Override
     public NetworkMessage validate(String position) {
-        return new NetworkMessage(ProtocolAction.NONE);
-
+        try {
+            grid.place(position, role.charAt(0));
+        } catch (PositionUsedException e) {
+            throw new RuntimeException(e);
+        } catch (PositionInvalidException e) {
+            throw new RuntimeException(e);
+        }
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     @Override
@@ -71,6 +79,6 @@ public class AIClient extends Client{
 
     @Override
     public NetworkMessage endGame(String position, char role, char isDraw) {
-        return new NetworkMessage(ProtocolAction.NONE);
+        return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 }

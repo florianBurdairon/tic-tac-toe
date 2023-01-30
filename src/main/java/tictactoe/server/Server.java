@@ -124,6 +124,8 @@ public class Server extends Thread {
             if(msgClient1.getProtocolAction() == ProtocolAction.WaitMessage && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
                 client1.send(new NetworkMessage(ProtocolAction.Quit));
                 client2.send(new NetworkMessage(ProtocolAction.Quit));
+                client1.disconnect();
+                client2.disconnect();
             }
 
         } catch (Exception e){
@@ -189,7 +191,7 @@ public class Server extends Thread {
             }
             //If the client1 didn't answer correctly the server send an error message
             if(!isDimensionSelected) {
-                error(client1, "Erreur lors de la saisi des dimensions de la grille.");
+                error(client1, "0", "Erreur lors de la saisi des dimensions de la grille.");
             }
         }
     }
@@ -251,10 +253,10 @@ public class Server extends Thread {
                 client.send(new NetworkMessage(ProtocolAction.AskConfirmation));
             }
             else{
-                error(client, "Cette case est déjà utilisée.");
+                error(client, "1", "Cette case est déjà utilisée.");
             }
         } catch (PositionInvalidException e) {
-            error(client, "La case n'est pas valide.");
+            error(client, "1", "La case n'est pas valide.");
         }
     }
 
@@ -279,7 +281,7 @@ public class Server extends Thread {
                 String[] param;
                 param = lastPlaceTurn;
                 client1.send(new NetworkMessage(ProtocolAction.Validate, param));
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 client2.send(new NetworkMessage(ProtocolAction.Play, param));
             }
         } catch (PositionUsedException e) {
@@ -296,8 +298,8 @@ public class Server extends Thread {
 
     }
 
-    public void error(CustomSocket client, String message){
-        String[] param = {message};
+    public void error(CustomSocket client, String errorCode, String message){
+        String[] param = {errorCode, message};
         NetworkMessage msg = new NetworkMessage(ProtocolAction.Error, param);
         client.send(msg);
     }

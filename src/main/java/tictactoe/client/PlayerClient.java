@@ -51,11 +51,13 @@ public class PlayerClient extends Client{
         try{
             server = new CustomSocket(new Socket(this.serverIP, this.port), true);
             System.out.println("Connecté");
-
-            super.run();
-
         } catch (Exception e) {
             System.out.println("Error on connection to server");
+        }
+        try {
+            super.run();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

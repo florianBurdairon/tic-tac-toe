@@ -15,6 +15,11 @@ public enum ProtocolAction {
     EndGame,
     Play, // Position played by the opponent
     Validate,
+    /**
+     * List of errors :
+     *  - 0:Error on dimensions selection
+     *  - 1:Error on play input
+     */
     Error,
     NetworkError,
     ResumeGame,

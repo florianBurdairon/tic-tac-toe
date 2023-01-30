@@ -70,14 +70,6 @@ public abstract class Client extends Thread{
                 networkMessage = new NetworkMessage(ProtocolAction.NONE);
             }
 
-            // If the message is an error
-            if (networkMessage.getProtocolAction() != ProtocolAction.Error && networkMessage.getProtocolAction() != ProtocolAction.NetworkError){
-                lastReceived = networkMessage;
-            } else {
-                System.out.println(networkMessage.getParameters()[0]);
-                networkMessage = lastReceived;
-            }
-
             // The message to send back
             NetworkMessage networkAnswer;
             String[] parameters = networkMessage.getParameters();
@@ -94,7 +86,8 @@ public abstract class Client extends Thread{
                     networkAnswer = play(parameters[0]);
                     break;
                 case Error:
-                    if(parameters[0].equals("La case n'est pas valide.") || parameters[0].equals("Cette case est déjà utilisée.")) networkAnswer = play(null);
+                    System.out.println(parameters[1]);
+                    if(parameters[0].equals("1")) networkAnswer = play(null);
                     else networkAnswer = selectDimensions();
                     break;
                 case AskConfirmation:
@@ -109,6 +102,7 @@ public abstract class Client extends Thread{
                 case Quit:
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     isRunning = false;
+                    server.disconnect();
                     System.out.println("Fin de la partie");
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
