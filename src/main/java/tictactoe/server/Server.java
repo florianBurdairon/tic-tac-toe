@@ -116,7 +116,6 @@ public class Server extends Thread {
                         isMsgClient1Used = true;
                         isMsgClient2Used = false;
                     }
-                    isNetWorkError = true;
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Quit || msgClient2.getProtocolAction() == ProtocolAction.Quit){
                     CustomSocket client = (msgClient1.getProtocolAction() == ProtocolAction.Quit) ? client1 : client2;
@@ -133,6 +132,7 @@ public class Server extends Thread {
                         isMsgClient1Used = false;
                         isMsgClient2Used = true;
                     }
+                    isNetWorkError = true;
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Place && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
                     verification(client1, paramClient1[0], paramClient1[1].charAt(0));
@@ -348,14 +348,20 @@ public class Server extends Thread {
         client1 = null;
         client2 = null;
         try {
-            String path = System.getenv("APPDATA") + "\\TicTacToe";
+            String path;
+            if(System.getProperty("os.name").toUpperCase().equals("WIN")){
+                path = System.getenv("APPDATA") + "/TicTacToe";
+            }
+            else{
+                path = System.getenv(("HOME")) + "/.tictactoe";
+            }
             Files.createDirectories(Paths.get(path));
-            FileOutputStream fileOut = new FileOutputStream(path + "\\grid.save");
+            FileOutputStream fileOut = new FileOutputStream(path + "/grid.save");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(grid);
             out.close();
             fileOut.close();
-            fileOut = new FileOutputStream(path + "\\gameinfo.save");
+            fileOut = new FileOutputStream(path + "/gameinfo.save");
             out = new ObjectOutputStream(fileOut);
             out.writeObject(lastPlayer);
             out.close();
