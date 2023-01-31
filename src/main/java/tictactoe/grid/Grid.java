@@ -33,6 +33,19 @@ public interface Grid extends Displayable {
     public int getSize();
 
     /**
+     * @param position [1,n^x] x=dimension of the grid
+     * @return cell's value
+     */
+    public char getValue(int position);
+
+    /**
+     * set cell value
+     * @param position [1,n^x] x=dimension of the grid
+     * @param value value to be set
+     */
+    public void setCellValue(int position, char value);
+
+    /**
      * @return count remaining cell
      */
     public int getRemainingCells();

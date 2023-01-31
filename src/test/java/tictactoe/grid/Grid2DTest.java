@@ -6,6 +6,8 @@ import tictactoe.grid.Grid2D;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -182,5 +184,17 @@ public class Grid2DTest {
         assertEquals(size*size-3, grid.getRemainingCells());
         grid.place("4",'x');
         assertEquals(size*size-4, grid.getRemainingCells());
+    }
+
+    @Test
+    public void get_set_value() throws Exception {
+        Random random = new Random();
+        int size = 3;
+        Grid grid = new Grid2D(size);
+        for (int i = 1; i <= size*size;i++){
+            char player = random.nextInt(2) == 0 ? 'O' :'X';
+            grid.setCellValue(i,player);
+            assertEquals(player,grid.getValue(i));
+        }
     }
 }
