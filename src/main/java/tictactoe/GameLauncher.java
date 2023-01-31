@@ -42,7 +42,7 @@ public class GameLauncher {
      * @param args
      */
     public static void main(String[] args) throws InterruptedException {
-        NetworkMode netmode = NetworkMode.Local;
+        NetworkMode netmode = null;
         BufferedReader sysIn = new BufferedReader(new InputStreamReader(System.in));
 
         // No already defined network mode
@@ -66,7 +66,14 @@ public class GameLauncher {
         }
         // Already defined network mode on build
         else {
-
+            if(args[0].equalsIgnoreCase("LOCAL")) netmode = NetworkMode.Local;
+            else if(args[0].equalsIgnoreCase("HOST")) netmode = NetworkMode.Host;
+            else if(args[0].equalsIgnoreCase("CLIENT")) netmode = NetworkMode.Client;
+            else if(args[0].equalsIgnoreCase("SERVER")) netmode = NetworkMode.Server;
+            else {
+                System.out.println("Mode réseau invalide : " + args[0]);
+                return;
+            }
         }
 
         /**
