@@ -71,10 +71,10 @@ public abstract class Client extends Thread{
                 networkMessage = new NetworkMessage(ProtocolAction.NONE);
             }
 
+
             // The message to send back
             NetworkMessage networkAnswer;
             String[] parameters = networkMessage.getParameters();
-
             // Action depending on message received
             switch (networkMessage.getProtocolAction()){
                 case SelectDimensions:

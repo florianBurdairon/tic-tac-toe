@@ -22,6 +22,16 @@ public interface Grid extends Displayable {
     /**
      * place a player cell
      * @param position the case number
+     * @param player player charactere
+     * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
+     */
+    public boolean place(int position, char player) throws PositionUsedException,PositionInvalidException;
+
+    /**
+     * place a player cell
+     * @param position the case number
      * @return true if the cell is used
      * @throws PositionInvalidException
      */
@@ -33,17 +43,22 @@ public interface Grid extends Displayable {
     public int getSize();
 
     /**
-     * @param position [1,n^x] x=dimension of the grid
+     * @return size total size of the grid = n^x (x = dimension)
+     */
+    public int getTotalSize();
+
+    /**
+     * @param position [0,n^x[ x=dimension of the grid
      * @return cell's value
      */
     public char getValue(int position);
 
     /**
      * set cell value
-     * @param position [1,n^x] x=dimension of the grid
+     * @param position [0,n^x[ x=dimension of the grid
      * @param value value to be set
      */
-    public void setCellValue(int position, char value);
+    public void setValue(int position, char value);
 
     /**
      * @return count remaining cell
