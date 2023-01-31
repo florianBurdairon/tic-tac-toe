@@ -227,7 +227,7 @@ public class Server extends Thread {
                 catch (NumberFormatException e){}
             }
             if(action == ProtocolAction.NetworkError) {
-                System.out.println("Erreur réseau. Partie annulée.");
+                System.out.println(Text.error("n"));
                 return true;
             }
             //If the client1 didn't answer correctly the server send an error message
@@ -296,7 +296,6 @@ public class Server extends Thread {
         try {
             ProtocolAction action;
             boolean isWinner = grid.place(lastPlaceTurn[0], lastPlaceTurn[1].charAt(0));
-            System.out.println(isWinner);
             lastPlayer = lastPlaceTurn[1];
             int nbCellFree = grid.getRemainingCells();
             if (isWinner || nbCellFree == 0){
@@ -366,7 +365,7 @@ public class Server extends Thread {
             out.writeObject(lastPlayer);
             out.close();
             fileOut.close();
-            System.out.println("Sauvegarde réalisée avec succès.");
+            System.out.println(Text.saved(true));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
