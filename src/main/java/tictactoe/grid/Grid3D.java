@@ -111,8 +111,27 @@ public class Grid3D implements Grid {
      * @param z z position
      * @return cell's value
      */
-    public int getValue(int x, int y,int z) {
+    public char getValue(int x, int y,int z) {
         return grid[z].getValue(x,y);
+    }
+
+    /**
+     * @param position [1,n*n*n]
+     * @return cell's value
+     */
+    public char getValue(int position) {
+        position--;
+        return grid[position /(this.size*this.size)].getValue(position%this.size,(position /this.size)%this.size);
+    }
+
+    /**
+     * set cell value
+     * @param position [1,n*n*n]
+     * @param value value to be set
+     */
+    public void setCellValue(int position, char value){
+        position--;
+        grid[position /(this.size*this.size)].setCellValue(position%this.size,(position /this.size)%this.size,value);
     }
 
     /**

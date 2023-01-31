@@ -101,8 +101,37 @@ public class Grid2D implements Grid {
      * @param y y position
      * @return cell's value
      */
-    public int getValue(int x, int y) {
+    public char getValue(int x, int y) {
         return grid[x][y];
+    }
+
+    /**
+     * @param position [1,n*n]
+     * @return cell's value
+     */
+    public char getValue(int position) {
+        position--;
+        return grid[position%this.size][position /this.size];
+    }
+
+    /**
+     * set cell value
+     * @param position [1,n*n]
+     * @param value value to be set
+     */
+    public void setCellValue(int position, char value){
+        position--;
+        grid[position%this.size][position /this.size] = value;
+    }
+
+    /**
+     * set cell value
+     * @param x x position
+     * @param y y position
+     * @param value value to be set
+     */
+    public void setCellValue(int x, int y, char value){
+        grid[x][y] = value;
     }
 
     /**
