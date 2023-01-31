@@ -160,6 +160,7 @@ public class PlayerClient extends Client{
                     return play(null);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Erreur de saisie");
             }
         }
