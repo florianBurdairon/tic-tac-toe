@@ -173,26 +173,26 @@ public class Grid2D implements Grid, Serializable {
     private boolean checkDiagonals(char player){
         boolean winDiag1 = true;
         for (int i = 0; i < this.size; i++) {
-            if(this.grid[i][i] !=player){
+            if(this.grid[i][i] != player){
                 winDiag1 = false;
                 break;
             }
         }
-        if(winDiag1 ) {
+        if(winDiag1) {
             for (int i = 0; i < this.size; i++) {
                 gridWinner[i][i] = true;
             }
         }
         boolean winDiag2 = true;
         for (int i = 0; i < this.size; i++) {
-            if(this.grid[this.size-1-i][this.size-1-i] !=player){
+            if(this.grid[i][this.size-1-i] != player){
                 winDiag2 = false;
                 break;
             }
         }
         if(winDiag2){
             for (int i = 0; i < this.size; i++) {
-                gridWinner[this.size-1-i][this.size-1-i] = true;
+                gridWinner[i][this.size-1-i] = true;
             }
         }
         return winDiag1 || winDiag2;
