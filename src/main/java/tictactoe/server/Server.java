@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
+import tictactoe.Text;
 import tictactoe.grid.Grid;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
@@ -453,25 +454,8 @@ public class Server extends Thread {
             path += "/" + savename;
             Files.createDirectories(Paths.get(path));
 
-            /*FileOutputStream fileOut = new FileOutputStream(path + "/grid.save");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(grid);
-            out.close();
-            fileOut.close();
-            fileOut = new FileOutputStream(path + "/gameinfo.save");
-            out = new ObjectOutputStream(fileOut);
-            ArrayList<String> gameInfo = new ArrayList<>();
-            gameInfo.add(lastPlayer);
-            gameInfo.add("" + isClient1Turn);
-            out.writeObject(gameInfo);
-            out.close();
-            fileOut.close();
-            System.out.println("Sauvegarde réalisée avec succès.");*/
-
             //Serialize the grid into json string
             Gson gson = new Gson();
-            //GsonBuilder builder = new GsonBuilder();
-           // Gson gson = builder.create();
             String json = gson.toJson(grid);
             //Write the json string into a file
             FileWriter writer = new FileWriter(path + "/grid.json");
@@ -589,36 +573,6 @@ public class Server extends Thread {
                         else{
                             grid = gson.fromJson(json, Grid3D.class);
                         }
-
-                        //Read file grid.save into string to send to clients
-                        /*FileInputStream fileIn = new FileInputStream(path + "/" + directorySave + "/grid.save");
-                        InputStreamReader isReader = new InputStreamReader(fileIn);
-                        BufferedReader reader = new BufferedReader(isReader);
-                        StringBuffer sb = new StringBuffer();
-                        String str;
-                        while((str = reader.readLine())!= null){
-                            sb.append(str);
-                        }
-                        serializedGrid = sb.toString();
-                        System.out.println(serializedGrid);
-                        reader.close();
-                        isReader.close();
-                        fileIn.close();*/
-
-                        //Deserialize grid.save into Grid grid
-                        /*fileIn = new FileInputStream(path + "/" + directorySave + "/grid.save");
-                        ObjectInputStream in = new ObjectInputStream(fileIn);
-                        grid = (Grid) in.readObject();
-                        in.close();
-                        fileIn.close();*/
-
-                        //Deserialize gameinfo.save into ArrayList<String> gameInfo
-                        /*fileIn = new FileInputStream(path + "/" + directorySave + "/gameinfo.save");
-                        in = new ObjectInputStream(fileIn);ArrayList<String> gameInfo = (ArrayList) in.readObject();
-                        lastPlayer = gameInfo.get(0);
-                        isClient1Turn = Boolean.parseBoolean(gameInfo.get(1));
-                        in.close();
-                        fileIn.close();*/
                     }
                 }
                 catch (NumberFormatException ignored){}
