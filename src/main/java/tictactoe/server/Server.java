@@ -371,7 +371,6 @@ public class Server extends Thread {
         try {
             ProtocolAction action;
             boolean isWinner = grid.place(lastPlaceTurn[0], lastPlaceTurn[1].charAt(0));
-            System.out.println(isWinner);
             lastPlayer = lastPlaceTurn[1];
             int nbCellFree = grid.getRemainingCells();
             if (isWinner || nbCellFree == 0){
