@@ -42,8 +42,4 @@ public interface Displayable {
      * ANSI white code
      */
     String ANSI_WHITE = "\u001B[37m";
-    /**
-     * Print
-     */
-    void display();
 }

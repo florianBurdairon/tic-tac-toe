@@ -51,8 +51,13 @@ public interface Grid extends Displayable {
     public int getRemainingCells();
 
     /**
-     * @return lines representing the grid
+     * Print grid
      */
-    public String[] getGridAsStrings();
+    public void display();
+
+    /**
+     * Print the grid with the cell selected by player
+     */
+    public void display(String position,char player);
 
 }

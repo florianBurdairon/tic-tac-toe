@@ -6,7 +6,7 @@ import tictactoe.grid.exceptions.PositionUsedException;
 /**
  * Class grid2D
  * @author Halvick Thomas
- * @version 1
+ * @version 2
  */
 public class Grid2D implements Grid {
     /**
@@ -42,48 +42,82 @@ public class Grid2D implements Grid {
     /**
      * @return count remaining cell
      */
-    @Override
     public int getRemainingCells() {
         return this.remainingCells;
     }
 
-
     /**
      * @return lines representing the grid
      */
-    @Override
-    public String[] getGridAsStrings() {
+    public String[] getGridAsStrings(){
+        return getGridAsStrings(-1,-1,'\0');
+    }
+
+    /**
+     * @param position string position ex "1"
+     * @param player player character
+     * @return lines representing the grid with the selection
+     */
+    public String[] getGridAsStrings(String position,char player){
+        try {
+            int[] positionArray = this.getPosition(position,this.size);
+            return getGridAsStrings(positionArray[0],positionArray[1],player);
+        }catch (Exception e){
+            //If selection not valid return default grid
+            return getGridAsStrings(-1,-1,'\0');
+        }
+    }
+
+    /**
+     * @param selectedX selected cell's x axe
+     * @param selectedY selected cell's y axe
+     * @param player player character
+     * @return lines representing the grid with the selection
+     */
+    public String[] getGridAsStrings(int selectedX, int selectedY,char player){
         String[] out = new String[this.size];
-        //number of caracter needed for the bigest number
+        //number of character needed for the biggest number
         int log = (int)Math.log10(this.size*this.size)+1;
         for(int y = 0; y < this.size; y++){
             out[y] = "|";
             for(int x = 0; x < this.size; x++){
+
+                if(selectedX == x && selectedY == y){
+                    out[y] += ANSI_RED + ">" +  String.format("%1$" + log + "s", player) + "<"+ ANSI_RESET;
+                    continue;
+                }
+
+                if (!(selectedX == x-1 &&selectedY == y)) {
+                    out[y] += " ";
+                }
+
                 if(this.grid[x][y] == '\0'){
-                    //complete smaller number to be as long as the bigest number
-                    out[y] += " "
-                            + String.format("%1$" + log + "s", x+y*this.size+1);
+                    //complete smaller number to be as long as the biggest number
+                    out[y] += String.format("%1$" + log + "s", x+y*this.size+1);
                 }
                 else if(gridWinner[x][y]){
-                    out[y] += " "
+                    out[y] +=
                             //Add color green to display
-                            + ANSI_GREEN
-                            //complete smaller number to be as long as the bigest number
+                            ANSI_GREEN
+                            //complete smaller number to be as long as the biggest number
                             + String.format("%1$" + log + "s", this.grid[x][y])
                             //end color
                             + ANSI_RESET;
                 }
                 else {
-                    out[y] += " "
-                            //Add color yellow to x player and blue to o player
-                            + (this.grid[x][y] == 'X' ? ANSI_YELLOW : ANSI_BLUE)
-                            //complete smaller number to be as long as the bigest number
-                            + String.format("%1$" + log + "s", this.grid[x][y])
-                            //end color
-                            + ANSI_RESET;
+                    out[y] += //Add color yellow to x player and blue to o player
+                            (player == 'X' ? ANSI_YELLOW : ANSI_BLUE)
+                                    //complete smaller number to be as long as the biggest number
+                                    + String.format("%1$" + log + "s", player)
+                                    //end color
+                                    + ANSI_RESET;
+
                 }
             }
-            out[y] += " |";
+            if (!(selectedX == this.size-1 && selectedY == y)) {
+                out[y] += " ";
+            }
+            out[y] += "|";
         }
         return out;
     }
@@ -146,23 +180,19 @@ public class Grid2D implements Grid {
 
     /**
      * @param player joueur à verifier
-     * @return true if at least one column is completed
+     * @return true the column is completed
      */
-    private boolean checkColumns(char player){
-        boolean win = false;
-        for (int x = 0; x < this.size; x++) {
-            boolean columnWin = true;
-            for (int y = 0; y < this.size; y++) {
-                if (grid[x][y] != player) {
-                    columnWin = false;
-                    break;
-                }
+    private boolean checkColumn(int x, char player){
+        boolean win = true;
+        for (int y = 0; y < this.size; y++) {
+            if (grid[x][y] != player) {
+                win = false;
+                break;
             }
-            if(columnWin){
-                win = true;
-                for (int y = 0; y < this.size; y++) {
-                    gridWinner[x][y] = true;
-                }
+        }
+        if(win){
+            for (int y = 0; y < this.size; y++) {
+                gridWinner[x][y] = true;
             }
         }
         return win;
@@ -170,24 +200,20 @@ public class Grid2D implements Grid {
 
     /**
      * @param player player charactere to check
-     * @return true if at least one row is completed
+     * @return true row is completed
      */
-    private boolean checkRows(char player){
-        boolean win = false;
-        for (int y = 0; y < this.size; y++) {
-            boolean rowWin = true;
-            for (int x = 0; x < this.size; x++) {
-                if (grid[x][y] != player) {
-                    rowWin = false;
-                    break;
-                }
+    private boolean checkRow(int y,char player){
+        boolean win = true;
+        for (int x = 0; x < this.size; x++) {
+            if (grid[x][y] != player) {
+                win = false;
+                break;
             }
-            //on stocke les coups gagnants
-            if(rowWin){
-                win = true;
-                for (int x = 0; x < this.size; x++) {
-                    gridWinner[x][y] = true;
-                }
+        }
+        //on stocke les coups gagnants
+        if(win){
+            for (int x = 0; x < this.size; x++) {
+                gridWinner[x][y] = true;
             }
         }
         return win;
@@ -224,7 +250,6 @@ public class Grid2D implements Grid {
         }
         return winDiag1 || winDiag2;
     }
-
 
     /**
      * Set cell as winning cell
@@ -264,7 +289,7 @@ public class Grid2D implements Grid {
             throw new PositionUsedException();
         this.grid[x][y] = player;
         this.remainingCells--;
-        return checkColumns(player) | checkRows(player) | checkDiagonals(player);
+        return checkColumn(x,player) | checkRow(y,player) | checkDiagonals(player);
     }
 
     /**
@@ -313,14 +338,22 @@ public class Grid2D implements Grid {
         }
     }
 
-
-
     /**
      * Print 2D grid
      */
     @Override
     public void display() {
         for (String ligne: this.getGridAsStrings()) {
+            System.out.println(ligne);
+        }
+    }
+
+    /**
+     * Print 2D grid
+     */
+    @Override
+    public void display(String position,char player) {
+        for (String ligne: this.getGridAsStrings(position,player)) {
             System.out.println(ligne);
         }
     }
