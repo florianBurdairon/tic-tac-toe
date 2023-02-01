@@ -43,6 +43,7 @@ public class Text {
         switch (errorCode){
             // Local error
             case "s": out += "Erreur de saisie"; break;
+            case "n": out += "Erreur réseau. Partie annulée."; break;
 
             // Server error
             case "0": out += "Erreur sur la sélection des dimensions."; break;
@@ -119,6 +120,16 @@ public class Text {
                 + ANSI_RESET;
     }
 
+    public static String saved(boolean saveSuccessful){
+        String out = ANSI_BLUE;
+        if (saveSuccessful)
+            out += "Sauvegarde réalisée avec succès !";
+        else
+            out += "Echec de la sauvegarde.";
+        out += ANSI_RESET;
+        return out;
+    }
+
     public static String selfDisconnected() {
         return ANSI_RED + "Vous avez été déconnecté du serveur." + ANSI_RESET;
     }
@@ -128,5 +139,41 @@ public class Text {
                 "Partie terminée !" +
                 "\nMerci d'avoir joué à notre jeu <3"
                 + ANSI_RESET;
+    }
+
+    public static String askNetworkMode(){
+        return ANSI_WHITE +
+                "\nVeuillez choisir votre mode de réseau pour jouer." +
+                "\n Disponible : 0 - Jeu en local (1vs1 ou 1vsIA)" +
+                "\n              1 - Hébergeur" +
+                "\n              2 - Client" +
+                "\n              3 - Serveur uniquement" +
+                "\nVotre choix : "
+                + ANSI_RESET;
+    }
+
+    public static String wrongArgs(String arg0){
+        return ANSI_RED + "\nMode réseau invalide : " + arg0 + ANSI_RESET;
+    }
+
+    public static String askHumanity(){
+        return ANSI_WHITE +
+                "\nVeuillez choisir votre type d'adversaire :" +
+                "\n  0 - Humain" +
+                "\n  1 - Intelligence Artificielle" +
+                "\nVotre choix : "
+                + ANSI_RESET;
+    }
+
+    public static String serverStarting(String mode){
+        return ANSI_BLUE + "\nLancement du serveur en mode " + mode + "..." + ANSI_RESET;
+    }
+
+    public static String showIP(String ip) {
+        return ANSI_BLUE + "Adresse IP du serveur : " + ip + ANSI_RESET;
+    }
+
+    public static String askIP(){
+        return ANSI_WHITE + "Adresse IP du serveur : " + ANSI_RESET;
     }
 }
