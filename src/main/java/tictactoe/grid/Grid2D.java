@@ -19,7 +19,7 @@ public class Grid2D implements Grid, Serializable {
     /**
      * grid of winning cells
      */
-    private final boolean[][] gridWinner;
+    private boolean[][] gridWinner;
 
     /**
      * size of the grid
@@ -108,9 +108,9 @@ public class Grid2D implements Grid, Serializable {
                 }
                 else {
                     out[y] += //Add color yellow to x player and blue to o player
-                            (player == 'X' ? ANSI_YELLOW : ANSI_BLUE)
+                            (this.grid[x][y] == 'X' ? ANSI_YELLOW : ANSI_BLUE)
                                     //complete smaller number to be as long as the biggest number
-                                    + String.format("%1$" + log + "s", player)
+                                    + String.format("%1$" + log + "s", this.grid[x][y])
                                     //end color
                                     + ANSI_RESET;
 
@@ -163,7 +163,7 @@ public class Grid2D implements Grid, Serializable {
      * @param value value to be set
      */
     public void setValue(int position, char value){
-        grid[position%this.size][position /this.size] = value;
+        this.setValue(position%this.size,position /this.size,value);
     }
 
     /**
@@ -173,6 +173,12 @@ public class Grid2D implements Grid, Serializable {
      * @param value value to be set
      */
     public void setValue(int x, int y, char value){
+        if(grid[x][y] == '\0' && value != '\0' ){
+            this.remainingCells--;
+        }
+        else if(grid[x][y] != '\0' && value == '\0'){
+            this.remainingCells++;
+        }
         grid[x][y] = value;
     }
 
@@ -303,10 +309,11 @@ public class Grid2D implements Grid, Serializable {
      * @throws PositionUsedException
      * @throws PositionInvalidException
      */
-    public boolean place(int x, int y, char player) throws PositionUsedException,PositionInvalidException {
+    public boolean place(int x, int y, char player) throws PositionUsedException {
         //check if cell is not already used
         if (this.grid[x][y] != '\0')
             throw new PositionUsedException();
+        this.gridWinner = new boolean[this.size][this.size];
         this.grid[x][y] = player;
         this.remainingCells--;
         return checkColumn(x,player) | checkRow(y,player) | checkDiagonals(player);

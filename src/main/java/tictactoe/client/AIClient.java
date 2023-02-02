@@ -102,12 +102,11 @@ public class AIClient extends Client{
             param[0]= z + pos;
         }
         param[1]=role;
-        System.out.println(param[0]);
         return new NetworkMessage(ProtocolAction.Place,param);
     }
 
     private int minmax(int depth, boolean maximizing,boolean win, int alpha, int beta) throws PositionInvalidException, PositionUsedException {
-        if (win) {
+        if (win){
             return maximizing ? -10 : 10;
         }
         if (depth == 0 || grid.getRemainingCells() == 0) {
@@ -118,24 +117,26 @@ public class AIClient extends Client{
             val = Integer.MIN_VALUE;
             for (int x = 0; x < this.grid.getTotalSize(); x++) {
                 if (this.grid.getValue(x) != '\0') continue;
-                int iteration = minmax(depth - 1, false,this.grid.place(x, this.role.charAt(0)),  alpha, beta);
-                this.grid.setValue(x,'\0');
-                if (iteration > val) {
-                    if(depth == MINMAX_MAX_DEPTH){
+                int iteration = minmax(depth - 1, false, this.grid.place(x, this.role.charAt(0)),alpha,beta);
+                this.grid.setValue(x, '\0');
+                if (iteration >= val) {
+                    if (depth == MINMAX_MAX_DEPTH) {
                         this.nextPlay = x;
                     }
                     val = iteration;
                 }
-                if (val > beta) break;
+                if (val > beta) return val;
                 alpha = max(alpha, val);
             }
+
         } else {
             val = Integer.MAX_VALUE;
             for (int x = 0; x < this.grid.getTotalSize(); x++) {
                 if (this.grid.getValue(x) != '\0') continue;
-                val = min(val, minmax(depth - 1, true,this.grid.place(x, this.role.charAt(0) == 'X' ? 'O' : 'X'),  alpha, beta));
+                int result=  minmax(depth - 1, true,this.grid.place(x, this.role.charAt(0) == 'X' ? 'O' : 'X'),alpha,beta);
+                if(result < val)val=result;
                 this.grid.setValue(x,'\0');
-                if (val < alpha) break;
+                if (val < alpha)  return val;
                 beta = min(beta, val);
             }
         }

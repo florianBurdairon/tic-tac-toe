@@ -1,43 +1,6 @@
 package tictactoe;
 
-public class Text {
-    /**
-     * ANSI reset code
-     */
-    static String ANSI_RESET = "\u001B[0m";
-    /**
-     * ANSI black code
-     */
-    static String ANSI_BLACK = "\u001B[30m";
-    /**
-     * ANSI red code
-     */
-    static String ANSI_RED = "\u001B[31;1m";
-    /**
-     * ANSI green code
-     */
-    String ANSI_GREEN = "\u001B[32m";
-    /**
-     * ANSI yellow code
-     */
-    static String ANSI_YELLOW = "\u001B[93m";
-    /**
-     * ANSI blue code
-     */
-    static String ANSI_BLUE = "\u001B[94m";
-    /**
-     * ANSI purple code
-     */
-    static String ANSI_PURPLE = "\u001B[95m";
-    /**
-     * ANSI cyan code
-     */
-    static String ANSI_CYAN = "\u001B[36m";
-    /**
-     * ANSI white code
-     */
-    static String ANSI_WHITE = "\u001B[97m";
-
+public class Text implements  Displayable{
     public static String error(String errorCode){
         String out = ANSI_RED;
         switch (errorCode){
@@ -100,13 +63,14 @@ public class Text {
 
     public static String results(String role, boolean isVictory, boolean isDraw){
         String out = "\n" + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + "Joueur " + role + " : ";
-        if (isVictory){
+        if (isDraw){
+            out += "Egalité...";
+        }
+        else if (isVictory){
             out += "Victoire !";
-        }else {
-            if (isDraw)
-                out += "Égalité...";
-            else
-                out += "Défaite...";
+        }
+        else{
+            out += "Défaite...";
         }
         out += ANSI_RESET;
         return out;

@@ -1,4 +1,4 @@
-package tictactoe.grid;
+package tictactoe;
 
 /**
  * interface Displayable of every component that need to be displayed
@@ -9,15 +9,15 @@ public interface Displayable {
     /**
      * ANSI reset code
      */
-    String ANSI_RESET = "\u001B[0m";
+    static String ANSI_RESET = "\u001B[0m";
     /**
      * ANSI black code
      */
-    String ANSI_BLACK = "\u001B[30m";
+    static String ANSI_BLACK = "\u001B[30m";
     /**
-     * ANSI red code
+     * ANSI bold red code
      */
-    String ANSI_RED = "\u001B[31m";
+    static String ANSI_RED = "\u001B[31;1m";
     /**
      * ANSI green code
      */
@@ -25,21 +25,21 @@ public interface Displayable {
     /**
      * ANSI yellow code
      */
-    String ANSI_YELLOW = "\u001B[93m";
+    static String ANSI_YELLOW = "\u001B[93m";
     /**
      * ANSI blue code
      */
-    String ANSI_BLUE = "\u001B[94m";
+    static String ANSI_BLUE = "\u001B[94m";
     /**
      * ANSI purple code
      */
-    String ANSI_PURPLE = "\u001B[35m";
+    static String ANSI_PURPLE = "\u001B[95m";
     /**
      * ANSI cyan code
      */
-    String ANSI_CYAN = "\u001B[36m";
+    static String ANSI_CYAN = "\u001B[36m";
     /**
      * ANSI white code
      */
-    String ANSI_WHITE = "\u001B[37m";
+    static String ANSI_WHITE = "\u001B[97m";
 }
