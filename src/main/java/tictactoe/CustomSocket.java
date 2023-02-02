@@ -61,7 +61,7 @@ public class CustomSocket {
                 String msg = "";
                 try {
                     while (!in.ready() && isConnected) {
-                        TimeUnit.MILLISECONDS.sleep(500);
+                        TimeUnit.MILLISECONDS.sleep(150);
                         if (System.currentTimeMillis() - timeOfLastHeartbeat > 10000) {
                             System.out.println("DISCONNECTED");
                             isConnected = false;
@@ -142,7 +142,7 @@ public class CustomSocket {
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
         } catch (Exception e) {
-            System.out.println("Erreur sur la création de socket");
+            System.out.println("Error on socket creation");
         }
 
         isConnected = true;
@@ -161,6 +161,19 @@ public class CustomSocket {
      */
     public boolean isConnected(){
         return this.isConnected;
+    }
+
+    /**
+     * Disconnects this socket from the connexion. It will take 10 seconds for the other side to detect this disconnection via the heartbeat system.
+     */
+    public void disconnect() {
+        this.isConnected = false;
+        try {
+            firewall.join();
+            if (this.isServer){
+                heartbeatEmitter.join();
+            }
+        } catch (Exception e) {}
     }
 
     /**

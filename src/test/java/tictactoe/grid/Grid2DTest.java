@@ -6,6 +6,8 @@ import tictactoe.grid.Grid2D;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -44,15 +46,17 @@ public class Grid2DTest {
     @Test
     public void no_winner() throws Exception {
         Grid grid = new Grid2D(3);
-        assertFalse( grid.place("1",'x'));
+        assertFalse( grid.place("1",'o'));
         assertFalse( grid.place("2",'x'));
-        assertFalse( grid.place("6",'x'));
-        assertFalse( grid.place("8",'x'));
         assertFalse( grid.place("3",'o'));
-        assertFalse( grid.place("4",'o'));
+
+        assertFalse( grid.place("4",'x'));
         assertFalse( grid.place("5",'o'));
-        assertFalse( grid.place("7",'o'));
-        assertFalse( grid.place("9",'o'));
+        assertFalse( grid.place("6",'x'));
+
+        assertFalse( grid.place("7",'x'));
+        assertFalse( grid.place("8",'o'));
+        assertFalse( grid.place("9",'x'));
     }
 
     @Test
@@ -144,6 +148,30 @@ public class Grid2DTest {
     }
 
     @Test
+    public void check_diagonal_1() throws Exception {
+        Grid grid = new Grid2D(3);
+        assertFalse( grid.place("1",'x'));
+        assertFalse( grid.place("5",'x'));
+        assertTrue( grid.place("9",'x'));
+
+        assertTrue(((Grid2D)grid).getCellStatus(0,0));
+        assertTrue(((Grid2D)grid).getCellStatus(1,1));
+        assertTrue(((Grid2D)grid).getCellStatus(2,2));
+    }
+
+    @Test
+    public void check_diagonal_2() throws Exception {
+        Grid grid = new Grid2D(3);
+        assertFalse( grid.place("3",'x'));
+        assertFalse( grid.place("5",'x'));
+        assertTrue( grid.place("7",'x'));
+
+        assertTrue(((Grid2D)grid).getCellStatus(2,0));
+        assertTrue(((Grid2D)grid).getCellStatus(1,1));
+        assertTrue(((Grid2D)grid).getCellStatus(0,2));
+    }
+
+    @Test
     public void check_remaining_cells_count() throws Exception {
         int size = 3;
         Grid grid = new Grid2D(size);
@@ -156,5 +184,25 @@ public class Grid2DTest {
         assertEquals(size*size-3, grid.getRemainingCells());
         grid.place("4",'x');
         assertEquals(size*size-4, grid.getRemainingCells());
+    }
+
+    @Test
+    public void get_set_value() throws Exception {
+        Random random = new Random();
+        int size = 3;
+        Grid grid = new Grid2D(size);
+        for (int i = 0; i < size*size;i++){
+            char player = random.nextInt(2) == 0 ? 'O' :'X';
+            grid.setValue(i,player);
+            assertEquals(player,grid.getValue(i));
+        }
+    }
+
+    @Test
+    public void get_total_size() throws Exception {
+        Random random = new Random();
+        int size = 3;
+        Grid grid = new Grid2D(size);
+        assertEquals(size*size,grid.getTotalSize());
     }
 }

@@ -3,12 +3,14 @@ package tictactoe.grid;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.io.Serializable;
+
 /**
  * Class grid3D
  * @author Halvick Thomas
- * @version 1
+ * @version 2
  */
-public class Grid3D implements Grid {
+public class Grid3D implements Grid, Serializable {
 
     /**
      * 3d grid
@@ -41,6 +43,14 @@ public class Grid3D implements Grid {
     }
 
     /**
+     * @return grid's total size
+     */
+    @Override
+    public int getTotalSize() {
+        return this.size * this.size* this.size;
+    }
+
+    /**
      * @return count remaining cell
      */
     @Override
@@ -55,14 +65,48 @@ public class Grid3D implements Grid {
     /**
      * @return lines representing the grid
      */
-    @Override
     public String[] getGridAsStrings() {
+        return getGridAsStrings(null,'\0');
+    }
+
+    /**
+     * @param position string position ex "A1"
+     * @param player player character
+     * @return lines representing the grid with the selection
+     */
+    public String[] getGridAsStrings(String position,char player) {
+        try {
+            //return grid with selected cell
+            int[]  positionArray = this.getPosition(position,this.size);
+            return getGridAsStrings(positionArray[0],positionArray[1],positionArray[2],player);
+        }catch (Exception e){
+            //If selection not valid return default grid
+            return getGridAsStrings(-1,-1,-1,'\0');
+        }
+    }
+
+    /**
+     * @param selectedX selected cell's x axe
+     * @param selectedY selected cell's y axe
+     * @param selectedZ selected cell's z axe
+     * @param player player character
+     * @return lines representing the grid with the selection
+     */
+    public String[] getGridAsStrings(int selectedX, int selectedY, int selectedZ,char player){
         String[] out = new String[this.size+1];
         for(int i = 0; i < out.length;i++){
             out[i] = "";
         }
         for(int z = 0; z < this.size; z++){
-            String[] out2D = this.grid[z].getGridAsStrings();
+            String[] out2D;
+
+            //If z axe is selected
+            if(selectedZ == z){
+                out2D = this.grid[z].getGridAsStrings(selectedX,selectedY,player);
+            }
+            else{
+                out2D = this.grid[z].getGridAsStrings();
+            }
 
             for(int i = 0; i < this.size;i++){
                 out[i+1] += (out[i+1] != "" ? "\t" : "") + out2D[i];
@@ -83,23 +127,17 @@ public class Grid3D implements Grid {
      * @param player player charactere to check
      * @return true if at least one of z axes is completed
      */
-    private boolean checkDepth(char player) {
-        boolean win = false;
-        for (int x = 0; x < this.size; x++) {
-            for (int y = 0; y < this.size; y++) {
-                boolean depthWin = true;
-                for (int z = 0; z < this.size; z++) {
-                    if (grid[z].getValue(x, y) != player) {
-                        depthWin = false;
-                        break;
-                    }
-                }
-                if (depthWin) {
-                    win = true;
-                    for (int z = 0; z < this.size; z++) {
-                        grid[z].setCellWinner(x, y);
-                    }
-                }
+    private boolean checkDepth(int x,int y,char player) {
+        boolean win = true;
+        for (int z = 0; z < this.size; z++) {
+            if (grid[z].getValue(x, y) != player) {
+                win = false;
+                break;
+            }
+        }
+        if (win) {
+            for (int z = 0; z < this.size; z++) {
+                grid[z].setCellWinner(x, y);
             }
         }
         return win;
@@ -111,8 +149,25 @@ public class Grid3D implements Grid {
      * @param z z position
      * @return cell's value
      */
-    public int getValue(int x, int y,int z) {
+    public char getValue(int x, int y,int z) {
         return grid[z].getValue(x,y);
+    }
+
+    /**
+     * @param position [0,n*n*n[
+     * @return cell's value
+     */
+    public char getValue(int position) {
+        return grid[position /(this.size*this.size)].getValue(position%this.size,(position /this.size)%this.size);
+    }
+
+    /**
+     * set cell value
+     * @param position [0,n*n*n[
+     * @param value value to be set
+     */
+    public void setValue(int position, char value){
+        grid[position /(this.size*this.size)].setValue(position%this.size,(position /this.size)%this.size,value);
     }
 
     /**
@@ -285,7 +340,22 @@ public class Grid3D implements Grid {
     public boolean place(String position, char player) throws PositionInvalidException, PositionUsedException {
         int[] positionArray = getPosition(position,this.size);
         boolean win2D = this.grid[positionArray[2]].place(positionArray[0],positionArray[1],player);
-        return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+        return  win2D | checkDepth(positionArray[0],positionArray[1],player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+    }
+
+    /**
+     * place a player cell
+     * @param position the case number
+     * @param player player charactere
+     * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
+     */
+    public boolean place(int position, char player) throws PositionUsedException,PositionInvalidException {
+        int x = position%this.size;
+        int y = (position/this.size)%this.size;
+        boolean win2D = this.grid[position/(this.size*this.size)].place(x,y,player);
+        return  win2D | checkDepth(x,y,player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
     }
 
     /**
@@ -335,6 +405,16 @@ public class Grid3D implements Grid {
     @Override
     public void display() {
         for (String ligne: this.getGridAsStrings()) {
+            System.out.println(ligne);
+        }
+    }
+
+    /**
+     * Print 3D grid
+     */
+    @Override
+    public void display(String position,char player) {
+        for (String ligne: this.getGridAsStrings(position,player)) {
             System.out.println(ligne);
         }
     }

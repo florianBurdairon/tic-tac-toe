@@ -7,7 +7,12 @@ import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -44,6 +49,8 @@ public class Server extends Thread {
 
     private String[] lastPlaceTurn = new String[2];
 
+    private String lastPlayer = "X";
+
     /**
      * Creates a local server with the default port (9876) open.
      */
@@ -68,15 +75,15 @@ public class Server extends Thread {
     public void run(){
         try {
             ServerSocket server = new ServerSocket(port);
-            System.out.println("En attente de joueur...");
+            //System.out.println("En attente de joueur...");
 
             client1 = new CustomSocket(server.accept(), false);
-            System.out.println("Joueur 1 connecté");
+            //System.out.println("Joueur 1 connecté");
             client2 = new CustomSocket(server.accept(), false);
-            System.out.println("Joueur 2 connecté");
+            //System.out.println("Joueur 2 connecté");
 
-            selectDimensions();
-            System.out.println("Dimensions sélectionnées");
+            boolean isNetWorkError = selectDimensions();
+            //System.out.println("Dimensions sélectionnées");
 
             startGame();
 
@@ -89,7 +96,7 @@ public class Server extends Thread {
             boolean isMsgClient1Used = true;
             boolean isMsgClient2Used = true;
 
-            while(!isEndGame){
+            while(!isEndGame && !isNetWorkError){
                 if(isMsgClient1Used){
                     msgClient1 = client1.read();
                     paramClient1 = msgClient1.getParameters();
@@ -97,6 +104,35 @@ public class Server extends Thread {
                 if(isMsgClient2Used){
                     msgClient2 = client2.read();
                     paramClient2 = msgClient2.getParameters();
+                }
+                if(msgClient1.getProtocolAction() == ProtocolAction.NetworkError || msgClient2.getProtocolAction() == ProtocolAction.NetworkError){
+                    CustomSocket client = (msgClient1.getProtocolAction() == ProtocolAction.NetworkError) ? client2 : client1;
+                    networkError(client);
+                    if (msgClient1.getProtocolAction() == ProtocolAction.NetworkError) {
+                        isMsgClient1Used = false;
+                        isMsgClient2Used = true;
+                    }
+                    else{
+                        isMsgClient1Used = true;
+                        isMsgClient2Used = false;
+                    }
+                }
+                if(msgClient1.getProtocolAction() == ProtocolAction.Quit || msgClient2.getProtocolAction() == ProtocolAction.Quit){
+                    CustomSocket client = (msgClient1.getProtocolAction() == ProtocolAction.Quit) ? client1 : client2;
+                    quit(client);
+                    if (msgClient1.getProtocolAction() == ProtocolAction.Quit) {
+                        if(paramClient1[0].equals("0")) quit(client1);
+                        else safeQuit(client1);
+                        isMsgClient1Used = true;
+                        isMsgClient2Used = false;
+                    }
+                    else {
+                        if(paramClient1[0].equals("0")) quit(client2);
+                        else safeQuit(client2);
+                        isMsgClient1Used = false;
+                        isMsgClient2Used = true;
+                    }
+                    isNetWorkError = true;
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Place && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
                     verification(client1, paramClient1[0], paramClient1[1].charAt(0));
@@ -119,13 +155,16 @@ public class Server extends Thread {
                     isMsgClient2Used = true;
                 }
             }
-            msgClient1 = client1.read();
-            msgClient2 = client2.read();
-            if(msgClient1.getProtocolAction() == ProtocolAction.WaitMessage && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
-                client1.send(new NetworkMessage(ProtocolAction.Quit));
-                client2.send(new NetworkMessage(ProtocolAction.Quit));
+            if(isEndGame){
+                msgClient1 = client1.read();
+                msgClient2 = client2.read();
+                if(msgClient1.getProtocolAction() == ProtocolAction.WaitMessage && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
+                    client1.send(new NetworkMessage(ProtocolAction.Quit));
+                    client2.send(new NetworkMessage(ProtocolAction.Quit));
+                    client1.disconnect();
+                    client2.disconnect();
+                }
             }
-
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -146,14 +185,14 @@ public class Server extends Thread {
     /**
      * Function that send a message to ask client1 to choose the size and the dimension of the grid and process the answer.
      */
-    public void selectDimensions(){
+    public boolean selectDimensions(){
         //System.out.println("Sending client1 to select dimensions");
         NetworkMessage msg = new NetworkMessage(ProtocolAction.SelectDimensions);
         client1.send(msg);
 
         boolean isDimensionSelected = false;
 
-        //Loop if the answer is not correct and wait for an other answer
+        //Loop if the answer is not correct and wait for another answer
         while(!isDimensionSelected){
             NetworkMessage answer;
             try{
@@ -167,28 +206,36 @@ public class Server extends Thread {
             }
             ProtocolAction action = answer.getProtocolAction();
 
-            //If the answer is an message with the action AnswerDimension
+            //If the answer is a message with the action AnswerDimension
             if (action == ProtocolAction.AnswerDimensions) {
                 String[] parameters = answer.getParameters();
                 //If the answer have 2 parameters and the size is greater than 2
-                if(parameters.length == 2 && Integer.parseInt(parameters[0]) > 2){
-                    //If the dimension is 2D
-                    if(Integer.parseInt(parameters[1]) == 2){
-                        grid = new Grid2D(Integer.parseInt(parameters[0]));
-                        isDimensionSelected = true;
-                    }
-                    //If the dimension is 3D
-                    else if(Integer.parseInt(parameters[1]) == 3){
-                        grid = new Grid3D(Integer.parseInt(parameters[0]));
-                        isDimensionSelected = true;
+                try{
+                    if(parameters.length == 2 && Integer.parseInt(parameters[0]) > 2){
+                        //If the dimension is 2D
+                        if(Integer.parseInt(parameters[1]) == 2){
+                            grid = new Grid2D(Integer.parseInt(parameters[0]));
+                            isDimensionSelected = true;
+                        }
+                        //If the dimension is 3D
+                        else if(Integer.parseInt(parameters[1]) == 3){
+                            grid = new Grid3D(Integer.parseInt(parameters[0]));
+                            isDimensionSelected = true;
+                        }
                     }
                 }
+                catch (NumberFormatException e){}
+            }
+            if(action == ProtocolAction.NetworkError) {
+                System.out.println(Text.error("n"));
+                return true;
             }
             //If the client1 didn't answer correctly the server send an error message
             if(!isDimensionSelected) {
-                error(client1, "Erreur lors de la saisi des dimensions de la grille.");
+                error(client1, "0");
             }
         }
+        return false;
     }
 
     /**
@@ -230,16 +277,6 @@ public class Server extends Thread {
         client2.send(msgClient2);
     }
 
-    /**
-     * Ends the game.
-     */
-    public void endGame(){
-        NetworkMessage msgClient1 = new NetworkMessage(ProtocolAction.EndGame);
-        NetworkMessage msgClient2 = new NetworkMessage(ProtocolAction.EndGame);
-        client1.send(msgClient1);
-        client2.send(msgClient2);
-    }
-
     public void verification(CustomSocket client, String position, char role){
         try {
             if(!grid.isCellUsed(position)){
@@ -248,30 +285,36 @@ public class Server extends Thread {
                 client.send(new NetworkMessage(ProtocolAction.AskConfirmation));
             }
             else{
-                error(client, "Cette case est déjà utilisée.");
+                error(client, "1");
             }
         } catch (PositionInvalidException e) {
-            error(client, "La case n'est pas valide.");
+            error(client, "2");
         }
     }
 
     public boolean play(CustomSocket client1, CustomSocket client2){
         try {
             ProtocolAction action;
-            String[] param;
             boolean isWinner = grid.place(lastPlaceTurn[0], lastPlaceTurn[1].charAt(0));
-            if (isWinner){
+            lastPlayer = lastPlaceTurn[1];
+            int nbCellFree = grid.getRemainingCells();
+            if (isWinner || nbCellFree == 0){
+                String[] param = new String[3];
                 action = ProtocolAction.EndGame;
-                param = lastPlaceTurn;
+                param[0] = lastPlaceTurn[0];
+                param[1] = lastPlaceTurn[1];
+                param[2] = "0";
+                if (!isWinner && nbCellFree == 0) param[2] = "1";
                 client1.send(new NetworkMessage(action, param));
                 Thread.sleep(200);
                 client2.send(new NetworkMessage(action, param));
-                return isWinner;
+                return isWinner || nbCellFree == 0;
             }
             else{
+                String[] param;
                 param = lastPlaceTurn;
                 client1.send(new NetworkMessage(ProtocolAction.Validate, param));
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 client2.send(new NetworkMessage(ProtocolAction.Play, param));
             }
         } catch (PositionUsedException e) {
@@ -284,20 +327,51 @@ public class Server extends Thread {
         return false;
     }
 
-    public void validate(){
-
-    }
-
-    public void error(CustomSocket client, String message){
-        String[] param = {message};
+    public void error(CustomSocket client, String errorCode){
+        String[] param = {errorCode};
         NetworkMessage msg = new NetworkMessage(ProtocolAction.Error, param);
         client.send(msg);
     }
 
-    public void networkError(){
-
+    public void networkError(CustomSocket client){
+        client.send(new NetworkMessage(ProtocolAction.OpponentDisconnected));
     }
 
+    public void quit(CustomSocket client){
+        client.send(new NetworkMessage(ProtocolAction.Quit));
+        client.disconnect();
+    }
+
+    public void safeQuit(CustomSocket client){
+        quit(client);
+        client1 = null;
+        client2 = null;
+        try {
+            String path;
+            if(System.getProperty("os.name").toUpperCase().equals("WIN")){
+                path = System.getenv("APPDATA") + "/TicTacToe";
+            }
+            else{
+                path = System.getenv(("HOME")) + "/.tictactoe";
+            }
+            Files.createDirectories(Paths.get(path));
+            FileOutputStream fileOut = new FileOutputStream(path + "/grid.save");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(grid);
+            out.close();
+            fileOut.close();
+            fileOut = new FileOutputStream(path + "/gameinfo.save");
+            out = new ObjectOutputStream(fileOut);
+            out.writeObject(lastPlayer);
+            out.close();
+            fileOut.close();
+            System.out.println(Text.saved(true));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void resumeGame(){
 
     }

@@ -5,6 +5,9 @@ import tictactoe.grid.Grid;
 import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
+
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -135,5 +138,25 @@ public class Grid3DTest {
         assertEquals(size*size*size-3, grid.getRemainingCells());
         grid.place("A4",'x');
         assertEquals(size*size*size-4, grid.getRemainingCells());
+    }
+
+    @Test
+    public void get_set_value() throws Exception {
+        Random random = new Random();
+        int size = 3;
+        Grid grid = new Grid3D(size);
+        for (int i = 0; i < size*size*size;i++){
+            char player = random.nextInt(2) == 0 ? 'O' :'X';
+            grid.setValue(i,player);
+            assertEquals(player,grid.getValue(i));
+        }
+    }
+
+    @Test
+    public void get_total_size() throws Exception {
+        Random random = new Random();
+        int size = 3;
+        Grid grid = new Grid3D(size);
+        assertEquals(size*size*size,grid.getTotalSize());
     }
 }
