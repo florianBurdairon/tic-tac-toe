@@ -182,6 +182,21 @@ public class PlayerClient extends Client{
         param[0]=position;
         param[1]=role;
 
+        if(position.equalsIgnoreCase("save")){
+            System.out.println("Saisissez un nom pour la sauvegarde.");
+            param[0] = "1";
+            try {
+                String choix = sysIn.readLine();
+                if(!choix.equals("")) param[1] = choix;
+            } catch (Exception e) {
+                System.out.println(Text.error("s"));
+            }
+            return new NetworkMessage(ProtocolAction.Quit,param);
+        }
+        if(position.equalsIgnoreCase("quit")){
+            param[0] = "0";
+            return new NetworkMessage(ProtocolAction.Quit, param);
+        }
         return new NetworkMessage(ProtocolAction.Place,param);
     }
 
