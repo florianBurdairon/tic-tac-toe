@@ -3,12 +3,14 @@ package tictactoe.grid;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
+import java.io.Serializable;
+
 /**
  * Class grid2D
  * @author Halvick Thomas
  * @version 2
  */
-public class Grid2D implements Grid {
+public class Grid2D implements Grid, Serializable {
     /**
      * 2d grid
      */
@@ -131,6 +133,14 @@ public class Grid2D implements Grid {
     }
 
     /**
+     * @return grid's total size
+     */
+    @Override
+    public int getTotalSize() {
+        return this.size * this.size;
+    }
+
+    /**
      * @param x x position
      * @param y y position
      * @return cell's value
@@ -140,21 +150,19 @@ public class Grid2D implements Grid {
     }
 
     /**
-     * @param position [1,n*n]
+     * @param position [0,n*n[
      * @return cell's value
      */
     public char getValue(int position) {
-        position--;
         return grid[position%this.size][position /this.size];
     }
 
     /**
-     * set cell value
-     * @param position [1,n*n]
+     * set value
+     * @param position [0,n*n[
      * @param value value to be set
      */
-    public void setCellValue(int position, char value){
-        position--;
+    public void setValue(int position, char value){
         grid[position%this.size][position /this.size] = value;
     }
 
@@ -164,7 +172,7 @@ public class Grid2D implements Grid {
      * @param y y position
      * @param value value to be set
      */
-    public void setCellValue(int x, int y, char value){
+    public void setValue(int x, int y, char value){
         grid[x][y] = value;
     }
 
@@ -273,6 +281,18 @@ public class Grid2D implements Grid {
         int x = positionArray[0];
         int y = positionArray[1];
         return  this.place(x,y,player);
+    }
+
+    /**
+     * place a player cell
+     * @param position the case number
+     * @param player player charactere
+     * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
+     */
+    public boolean place(int position, char player) throws PositionUsedException,PositionInvalidException {
+        return  this.place(position%this.size,position/this.size,player);
     }
 
     /**
