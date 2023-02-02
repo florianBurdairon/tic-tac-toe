@@ -7,9 +7,6 @@ package tictactoe;
  * @version 1
  */
 public enum ProtocolAction {
-    /**
-     * Protocol actions send by the server
-     */
     SelectDimensions,
     StartGame,
     EndGame,
@@ -26,10 +23,6 @@ public enum ProtocolAction {
     ResumeGame,
     AskConfirmation,
     OpponentDisconnected,
-
-    /**
-     * Protocol actions send by the client
-     */
     AnswerDimensions, // GridLength , GridDimension
     Place,
     WaitMessage,

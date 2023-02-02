@@ -2,6 +2,7 @@ package tictactoe.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
@@ -69,6 +70,10 @@ public class Server extends Thread {
     private String serializedGrid = null;
 
     /**
+     * The path of the save file
+     */
+    private String savePath = null;
+    /**
      * Creates a local server with the default port (9876) open.
      */
     public Server () {
@@ -103,7 +108,7 @@ public class Server extends Thread {
             //System.out.println("Dimensions sélectionnées");
             boolean isNetWorkError;
             String path;
-            if(System.getProperty("os.name").toUpperCase().equals("WIN")){
+            if(System.getProperty("os.name").toUpperCase().contains("WIN")){
                 path = System.getenv("APPDATA") + "/TicTacToe";
             }
             else{
@@ -383,6 +388,10 @@ public class Server extends Thread {
                 client1.send(new NetworkMessage(action, param));
                 Thread.sleep(200);
                 client2.send(new NetworkMessage(action, param));
+                if(savePath != null){
+                    File saveDirectory = new File(savePath);
+                    FileUtils.deleteDirectory(saveDirectory);
+                }
                 return isWinner || nbCellFree == 0;
             }
             else{
@@ -397,6 +406,8 @@ public class Server extends Thread {
         } catch (PositionInvalidException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return false;
@@ -443,7 +454,7 @@ public class Server extends Thread {
         client2 = null;
         try {
             String path;
-            if(System.getProperty("os.name").toUpperCase().equals("WIN")){
+            if(System.getProperty("os.name").toUpperCase().contains("WIN")){
                 path = System.getenv("APPDATA") + "/TicTacToe";
             }
             else{
@@ -485,7 +496,14 @@ public class Server extends Thread {
      */
     public boolean resumeGame(){
         String[] directoryList = null;
-        String path = System.getenv(("HOME")) + "/.tictactoe";
+        String path;
+        if(System.getProperty("os.name").toUpperCase().contains("WIN")){
+            path = System.getenv("APPDATA") + "/TicTacToe";
+        }
+        else{
+
+            path = System.getenv(("HOME")) + "/.tictactoe";
+        }
         File file = new File(path);
         if (file.isDirectory()){
             File[] files = file.listFiles();
@@ -526,6 +544,7 @@ public class Server extends Thread {
                     //If the answer is the position of a directory is directoryList
                     else if(Integer.parseInt(parameters[0]) <= directoryList.length){
                         String directorySave = directoryList[Integer.parseInt(parameters[0]) - 1];
+                        savePath = path + "/" + directorySave;
 
                         //Read file path+"/"+directorySave+"gameinfo.json" into string
                         File jsonGameInfo = new File(path + "/" + directorySave + "/gameinfo.json");

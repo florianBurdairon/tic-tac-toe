@@ -75,4 +75,7 @@ public class AIClient extends Client{
     public NetworkMessage opponentDisconnected() {
         return new NetworkMessage(ProtocolAction.NONE);
     }
+
+    @Override
+    public void quit() {}
 }

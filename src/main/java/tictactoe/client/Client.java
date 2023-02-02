@@ -118,7 +118,7 @@ public abstract class Client extends Thread{
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     isRunning = false;
                     server.disconnect();
-                    System.out.println(Text.endGame());
+                    quit();
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     break;
@@ -136,5 +136,6 @@ public abstract class Client extends Thread{
     public abstract NetworkMessage validate(String position);
     public abstract NetworkMessage endGame(String position, char role, char isDraw);
     public abstract NetworkMessage opponentDisconnected();
+    public abstract void quit();
 
 }

@@ -95,13 +95,7 @@ public class PlayerClient extends Client{
 
     @Override
     public NetworkMessage resumeGame(String[] saveList) {
-        System.out.println("Des sauvegardes ont été détectées sur le serveur.\nSaisissez le numéro associé à la sauvegarde que vous souhaitez utiliser.");
-        System.out.println("0 - Aucune (Nouvelle partie)");
-        int i = 1;
-        for (String save : saveList) {
-            System.out.println("" + i + " - " + save);
-            i++;
-        }
+        System.out.println(Text.askSave(saveList));
 
         boolean isSaveSelected = false;
         NetworkMessage answerMessage = new NetworkMessage(ProtocolAction.NONE);
@@ -143,6 +137,8 @@ public class PlayerClient extends Client{
 
         if (nextPlayer.equals(this.role)){
             return play(null);
+        }else {
+            System.out.println(Text.otherStarts());
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
@@ -199,7 +195,7 @@ public class PlayerClient extends Client{
             try {
                 System.out.println(Text.askConfirm());
                 String confirm = sysIn.readLine();
-                if(confirm.equalsIgnoreCase("oui")){
+                if(confirm.equalsIgnoreCase("oui") || confirm.isBlank()){
                     return new NetworkMessage(ProtocolAction.Confirmation);
                 }
                 else{
@@ -289,5 +285,10 @@ public class PlayerClient extends Client{
             }
         }
         return new NetworkMessage(ProtocolAction.Quit, param);
+    }
+
+    @Override
+    public void quit() {
+        System.out.println(Text.endGame());
     }
 }
