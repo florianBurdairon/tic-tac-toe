@@ -79,6 +79,10 @@ public class Text {
         return ANSI_WHITE + "\nA votre tour," + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + " joueur " + role + ANSI_RESET;
     }
 
+    public static String iaPlay(String role){
+        return ANSI_WHITE + "\nAu tour de l'" + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + "ia " + role + ANSI_RESET;
+    }
+
     public static String askPlay(boolean is3D){
         String out = ANSI_WHITE;
         if (is3D){

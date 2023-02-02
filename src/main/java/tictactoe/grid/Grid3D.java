@@ -43,6 +43,14 @@ public class Grid3D implements Grid, Serializable {
     }
 
     /**
+     * @return grid's total size
+     */
+    @Override
+    public int getTotalSize() {
+        return this.size * this.size* this.size;
+    }
+
+    /**
      * @return count remaining cell
      */
     @Override
@@ -118,22 +126,20 @@ public class Grid3D implements Grid, Serializable {
     }
 
     /**
-     * @param position [1,n*n*n]
+     * @param position [0,n*n*n[
      * @return cell's value
      */
     public char getValue(int position) {
-        position--;
         return grid[position /(this.size*this.size)].getValue(position%this.size,(position /this.size)%this.size);
     }
 
     /**
      * set cell value
-     * @param position [1,n*n*n]
+     * @param position [0,n*n*n[
      * @param value value to be set
      */
-    public void setCellValue(int position, char value){
-        position--;
-        grid[position /(this.size*this.size)].setCellValue(position%this.size,(position /this.size)%this.size,value);
+    public void setValue(int position, char value){
+        grid[position /(this.size*this.size)].setValue(position%this.size,(position /this.size)%this.size,value);
     }
 
     /**
@@ -306,6 +312,19 @@ public class Grid3D implements Grid, Serializable {
     public boolean place(String position, char player) throws PositionInvalidException, PositionUsedException {
         int[] positionArray = getPosition(position,this.size);
         boolean win2D = this.grid[positionArray[2]].place(positionArray[0],positionArray[1],player);
+        return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+    }
+
+    /**
+     * place a player cell
+     * @param position the case number
+     * @param player player charactere
+     * @return true if the player won
+     * @throws PositionUsedException
+     * @throws PositionInvalidException
+     */
+    public boolean place(int position, char player) throws PositionUsedException,PositionInvalidException {
+        boolean win2D = this.grid[position/(this.size*this.size)].place(position%this.size,(position/this.size)%this.size,player);
         return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
     }
 
