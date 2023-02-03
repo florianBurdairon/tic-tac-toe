@@ -6,6 +6,8 @@ import tictactoe.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid;
 
+import java.util.Optional;
+
 /**
  * Class to create a client. It needs to connect to a server.
  * @author Bernard Alban
@@ -40,6 +42,11 @@ public abstract class Client extends Thread{
      * The role of the player ('X' or 'O').
      */
     protected String role;
+
+    /**
+     *
+     */
+    boolean isSavedGame = false;
 
     /**
      * Creates a client with the given server ip address and the port.
@@ -80,8 +87,12 @@ public abstract class Client extends Thread{
                 case SelectDimensions:
                     networkAnswer = selectDimensions();
                     break;
+                case ResumeGame:
+                    networkAnswer = resumeGame(parameters);
+                    break;
                 case StartGame:
-                    networkAnswer = startGame(parameters[0], parameters[1], parameters[2]);
+                    if (parameters.length == 5) networkAnswer = startGame(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+                    else networkAnswer = startGame(parameters[0], parameters[1], parameters[2], parameters[3], null);
                     break;
                 case Play:
                     networkAnswer = play(parameters[0]);
@@ -112,7 +123,7 @@ public abstract class Client extends Thread{
                     networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     isRunning = false;
                     server.disconnect();
-                    System.out.println(Text.endGame());
+                    quit();
                     break;
                 default: networkAnswer = new NetworkMessage(ProtocolAction.NONE);
                     break;
@@ -123,11 +134,13 @@ public abstract class Client extends Thread{
     }
 
     public abstract NetworkMessage selectDimensions();
-    public abstract NetworkMessage startGame(String role, String dimension, String size);
+    public abstract NetworkMessage resumeGame(String[] saveList);
+    public abstract NetworkMessage startGame(String role, String nextPlayer, String dimension, String size, String serializedGrid);
     public abstract NetworkMessage play(String posOpponent);
     public abstract NetworkMessage confirmation();
     public abstract NetworkMessage validate(String position);
     public abstract NetworkMessage endGame(String position, char role, char isDraw);
     public abstract NetworkMessage opponentDisconnected();
+    public abstract void quit();
 
 }

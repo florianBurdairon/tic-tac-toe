@@ -23,7 +23,7 @@ public class CustomSocket {
         public void run() {
             do {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     if (isConnected) {
                         //System.out.println("Sent ping");
                         out.println("p");
@@ -53,6 +53,9 @@ public class CustomSocket {
             this.isServer = isServer;
         }
 
+        /**
+         * Main function ,which ensure the connexion.
+         */
         @Override
         public void run() {
             timeOfLastHeartbeat = System.currentTimeMillis();
@@ -62,7 +65,7 @@ public class CustomSocket {
                 try {
                     while (!in.ready() && isConnected) {
                         TimeUnit.MILLISECONDS.sleep(150);
-                        if (System.currentTimeMillis() - timeOfLastHeartbeat > 10000) {
+                        if (System.currentTimeMillis() - timeOfLastHeartbeat > 5000) {
                             System.out.println("DISCONNECTED");
                             isConnected = false;
                         }
@@ -184,9 +187,9 @@ public class CustomSocket {
         String msg = "" + networkMessage.getProtocolAction().getValue();
 
         if (networkMessage.getParameters() != null){
-            msg += ":";
+            msg += "::";
             for (String s : networkMessage.getParameters()) {
-                msg += s + ",";
+                msg += s + ",,";
             }
         }
         out.println(msg);
@@ -234,8 +237,8 @@ public class CustomSocket {
         NetworkMessage networkMessage = new NetworkMessage();
 
         // If there are parameters
-        if (msg.contains(":")) {
-            String[] message = msg.split(":");
+        if (msg.contains("::")) {
+            String[] message = msg.split("::");
 
             ProtocolAction protocolAction = ProtocolAction.fromInt(Integer.parseInt(message[0]));
             if (protocolAction == ProtocolAction.NONE){
@@ -244,7 +247,7 @@ public class CustomSocket {
             }
             networkMessage.setProtocolAction(protocolAction);
 
-            message = message[1].split(",");
+            message = message[1].split(",,");
             networkMessage.setParameters(message);
 
             return networkMessage;
