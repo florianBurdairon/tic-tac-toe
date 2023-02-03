@@ -38,7 +38,7 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        NetworkMessage networkMessage = client.startGame("O","3","3");
+        NetworkMessage networkMessage = client.startGame("O","X","3","3",null);
         assertEquals(ProtocolAction.WaitMessage, networkMessage.getProtocolAction());
     }
 
@@ -48,8 +48,8 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        client.startGame("O","3","3");
-        NetworkMessage networkMessage = client.play(null);
+        client.startGame("O","X","3","3",null);
+        NetworkMessage networkMessage = client.play("A2");
         assertEquals(ProtocolAction.Place, networkMessage.getProtocolAction());
     }
 
@@ -61,19 +61,11 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        client.startGame(role,"3","3");
+        client.startGame("O","X","3","3",null);
         NetworkMessage networkMessage = client.play(null);
         assertEquals(ProtocolAction.Place, networkMessage.getProtocolAction());
         assertEquals(position, networkMessage.getParameters()[0]);
         assertEquals(role, networkMessage.getParameters()[1]);
-    }
-
-    @Test
-    public void opponent_play_valid() {
-        Client client = new PlayerClient();
-        client.startGame("O","3","3");
-        NetworkMessage networkMessage = client.play("A1");
-        assertEquals(ProtocolAction.Place, networkMessage.getProtocolAction());
     }
 
     @Test
@@ -82,7 +74,7 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        client.startGame("O","3","3");
+        client.startGame("O","X","3","3",null);
         NetworkMessage networkMessage = client.confirmation();
         assertEquals( ProtocolAction.Confirmation, networkMessage.getProtocolAction());
     }
@@ -93,7 +85,7 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        client.startGame("O","3","3");
+        client.startGame("O","X","3","3",null);
         NetworkMessage networkMessage = client.confirmation();
         assertEquals( ProtocolAction.Place, networkMessage.getProtocolAction());
     }
@@ -104,7 +96,7 @@ public class PlayerClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new PlayerClient();
-        client.startGame("O","3","3");
+        client.startGame("O","X","3","3",null);
         NetworkMessage networkMessage = client.endGame("A1", 'O','0');
         assertEquals(ProtocolAction.WaitMessage,networkMessage.getProtocolAction());
     }
@@ -112,14 +104,14 @@ public class PlayerClientTest {
     @Test
     public void player_validate() {
         Client client = new PlayerClient();
-        client.startGame("O","3","3");
+        client.startGame("O","X","3","3",null);
         NetworkMessage networkMessage = client.validate("A1");
         assertEquals( ProtocolAction.WaitMessage, networkMessage.getProtocolAction());
     }
 
     @Test
     public void player_opponent_disconnected() {
-        String input = "0\n";
+        String input = "0\ntest\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();

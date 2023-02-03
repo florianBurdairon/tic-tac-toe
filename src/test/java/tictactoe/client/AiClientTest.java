@@ -21,7 +21,7 @@ public class AiClientTest {
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         Client client = new AIClient();
-        NetworkMessage networkMessage = client.startGame("O","3","3");
+        NetworkMessage networkMessage = client.startGame("O","X","3","3",null);
         assertEquals(ProtocolAction.WaitMessage, networkMessage.getProtocolAction());
     }
 
