@@ -63,8 +63,6 @@ public class AIClient extends Client{
 
         if (nextPlayer.equals(this.role)){
             return play(null);
-        }else {
-            System.out.println(Text.otherStarts());
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
@@ -81,8 +79,8 @@ public class AIClient extends Client{
                 throw new RuntimeException(e);
             }
         }
-
         System.out.println(Text.iaPlay(this.role));
+
         try {
             this.minmax(MINMAX_MAX_DEPTH,true,false,Integer.MIN_VALUE,Integer.MAX_VALUE);
         }
@@ -145,10 +143,6 @@ public class AIClient extends Client{
             for (int x = 0; x < this.grid.getTotalSize(); x++) {
                 if (this.grid.getValue(x) != '\0') continue;
                 int result=  minmax(depth - 1, true,this.grid.place(x, this.role.charAt(0) == 'X' ? 'O' : 'X'),alpha,beta);
-                if(depth == 5 && result == -10){
-                    grid.display();
-                    System.out.println(x);
-                }
                 if(result < val)val=result;
                 this.grid.setValue(x,'\0');
                 if (val < alpha)  return val;

@@ -170,7 +170,8 @@ public class Server extends Thread {
                             if(client2.isConnected()) networkError(client2, existSavePath);
                         }
                         else {
-                            safeQuit(client1, paramClient1[1]);
+                            quit(client1);
+                            save(paramClient1[1]);
                             if(client2.isConnected()) quit(client2);
                         }
                         isMsgClient1Used = true;
@@ -182,7 +183,8 @@ public class Server extends Thread {
                             if(client1.isConnected()) networkError(client1, existSavePath);
                         }
                         else {
-                            safeQuit(client2, paramClient2[1]);
+                            quit(client2);
+                            save(paramClient2[1]);
                             if(client1.isConnected()) quit(client1);
                         }
                         isMsgClient1Used = client1.isConnected();
@@ -268,19 +270,13 @@ public class Server extends Thread {
                 //If the answer have 2 parameters and the size is greater than 2
                 try{
                     if(parameters.length == 2 && Integer.parseInt(parameters[0]) > 2){
-                        //If the dimension is 2D
-                        if(Integer.parseInt(parameters[1]) == 2){
-                            grid = new Grid2D(Integer.parseInt(parameters[0]));
-                            isDimensionSelected = true;
-                        }
-                        //If the dimension is 3D
-                        else if(Integer.parseInt(parameters[1]) == 3){
-                            grid = new Grid3D(Integer.parseInt(parameters[0]));
-                            isDimensionSelected = true;
-                        }
+                        setGrid(Integer.parseInt(parameters[0]),Integer.parseInt(parameters[1]));
+                        isDimensionSelected = true;
                     }
                 }
-                catch (NumberFormatException ignored){}
+                catch (Exception ignored){
+                    System.out.println(Text.error("s"));
+                }
             }
             if(action == ProtocolAction.NetworkError) {
                 System.out.println(Text.error("n"));
@@ -292,6 +288,24 @@ public class Server extends Thread {
             }
         }
         return false;
+    }
+
+    /**
+     * @param width grid's width
+     * @param dimension grid's dimension(2d or 3d)
+     * @throws Exception throw if grid format is invalid
+     */
+    private void setGrid(int width,int dimension) throws Exception {
+        if(dimension == 2){
+            grid = new Grid2D(width);
+        }
+        //If the dimension is 3D
+        else if(dimension == 3){
+            grid = new Grid3D(width);
+        }
+        else{
+            throw new Exception("Grid format invalid !");
+        }
     }
 
     /**
@@ -325,6 +339,9 @@ public class Server extends Thread {
             param1[0] = "O";
             param2[0] = "X";
         }
+
+        param1[1] = "X";
+        param2[1] = "X";
 
         if(serializedGrid != null){
             String nextPlayer = (lastPlayer.equalsIgnoreCase("X") ? "O" : "X");
@@ -443,27 +460,20 @@ public class Server extends Thread {
     }
 
     /**
-     * Function which manage the quit and safe action.
-     * Safe action is link with the serialization of the grid and the last player who was connected.
+     * Function which manage the save action.
+     * save action is link with the serialization of the grid and the last player who was connected.
      * The serialization create 2 folders, which are stored in a folder name "TicTacToe" directly on the computer
      * of the host in the folder "APPDATA" if the OS=Windows (WIN) or in the folder named "HOME" if OS=Linux
-     * @param client the client that asked to save
      * @param savename the name of the save
      */
-    public void safeQuit(CustomSocket client, String savename){
-        quit(client);
+    public void save(String savename){
         try {
             String path;
             if(savePath != null){
                 path = savePath;
             }
             else{
-                if(System.getProperty("os.name").toUpperCase().contains("WIN")){
-                    path = System.getenv("APPDATA") + "/TicTacToe";
-                }
-                else{
-                    path = System.getenv(("HOME")) + "/.tictactoe";
-                }
+                path = getSavePath();
                 Files.createDirectories(Paths.get(path));
                 path += "/" + savename;
                 Files.createDirectories(Paths.get(path));
@@ -493,21 +503,14 @@ public class Server extends Thread {
             e.printStackTrace();
         }
     }
+
     /**
      * Function which manage the resume of the game
-     *
+     * @return if a network error occur while loading game
      */
     public boolean resumeGame(){
         String[] directoryList = null;
-        String path;
-        if(System.getProperty("os.name").toUpperCase().contains("WIN")){
-            path = System.getenv("APPDATA") + "/TicTacToe";
-        }
-        else{
-
-            path = System.getenv(("HOME")) + "/.tictactoe";
-        }
-        File file = new File(path);
+        File file = new File(getSavePath());
         if (file.isDirectory()){
             File[] files = file.listFiles();
             if (files != null){
@@ -547,53 +550,7 @@ public class Server extends Thread {
                     //If the answer is the position of a directory is directoryList
                     else if(Integer.parseInt(parameters[0]) <= directoryList.length){
                         String directorySave = directoryList[Integer.parseInt(parameters[0]) - 1];
-                        savePath = path + "/" + directorySave;
-
-                        //Read file path+"/"+directorySave+"gameinfo.json" into string
-                        File jsonGameInfo = new File(path + "/" + directorySave + "/gameinfo.json");
-                        FileInputStream fileIn = new FileInputStream(jsonGameInfo);
-                        InputStreamReader isReader = new InputStreamReader(fileIn);
-                        BufferedReader reader = new BufferedReader(isReader);
-                        StringBuffer sb = new StringBuffer();
-                        String str;
-                        while((str = reader.readLine())!= null){
-                            sb.append(str);
-                        }
-                        String serializedGameInfo = sb.toString();
-                        reader.close();
-                        isReader.close();
-                        fileIn.close();
-
-                        //Deserialize json string into ArrayList<String> gameInfo
-                        Gson gson = new Gson();
-                        String json = serializedGameInfo;
-                        ArrayList<String> gameInfo = gson.fromJson(json, ArrayList.class);
-                        lastPlayer = gameInfo.get(0);
-                        isClient1Turn = Boolean.parseBoolean(gameInfo.get(1));
-                        String className = gameInfo.get(2);
-
-                        //Read file path+"/"+directorySave+"grid.json" into string
-                        File jsonGrid = new File(path + "/" + directorySave + "/grid.json");
-                        fileIn = new FileInputStream(jsonGrid);
-                        isReader = new InputStreamReader(fileIn);
-                        reader = new BufferedReader(isReader);
-                        sb = new StringBuffer();
-                        while((str = reader.readLine())!= null){
-                            sb.append(str);
-                        }
-                        serializedGrid = sb.toString();
-                        reader.close();
-                        isReader.close();
-                        fileIn.close();
-
-                        //Deserialize json string into Grid grid
-                        json = serializedGrid;
-                        if(className.equals("tictactoe.grid.Grid2D")){
-                            grid = gson.fromJson(json, Grid2D.class);
-                        }
-                        else{
-                            grid = gson.fromJson(json, Grid3D.class);
-                        }
+                        loadGame(directorySave);
                     }
                 }
                 catch (NumberFormatException ignored){}
@@ -608,6 +565,64 @@ public class Server extends Thread {
         }
         else return selectDimensions();
         return false;
+    }
+
+    private void loadGame(String directorySave) throws IOException {
+        //Read file path+"/"+directorySave+"gameinfo.json" into string
+        String serializedGameInfo = readSaveFile(directorySave,"gameinfo.json");
+        serializedGrid = readSaveFile(directorySave,"grid.json");
+
+        //Deserialize json string into ArrayList<String> gameInfo
+        Gson gson = new Gson();
+        String json = serializedGameInfo;
+        ArrayList<String> gameInfo = gson.fromJson(json, ArrayList.class);
+        lastPlayer = gameInfo.get(0);
+        isClient1Turn = Boolean.parseBoolean(gameInfo.get(1));
+        String className = gameInfo.get(2);
+
+        //Read file path+"/"+directorySave+"grid.json" into string
+        serializedGrid = readSaveFile(directorySave,"grid.json");
+
+        //Deserialize json string into Grid grid
+        json = serializedGrid;
+        if(className.equals("tictactoe.grid.Grid2D")){
+            grid = gson.fromJson(json, Grid2D.class);
+        }
+        else{
+            grid = gson.fromJson(json, Grid3D.class);
+        }
+    }
+
+    /**
+     * @param directorySave
+     * @param fileName
+     * @return serialized save file
+     * @throws IOException
+     */
+    private String readSaveFile(String directorySave,String fileName) throws IOException {
+        File jsonGameInfo = new File(getSavePath() + "/" + directorySave + "/" +fileName);
+        FileInputStream fileIn = new FileInputStream(jsonGameInfo);
+        InputStreamReader isReader = new InputStreamReader(fileIn);
+        BufferedReader reader = new BufferedReader(isReader);
+        StringBuffer sb = new StringBuffer();
+        String str;
+        while((str = reader.readLine())!= null){
+            sb.append(str);
+        }
+        reader.close();
+        isReader.close();
+        fileIn.close();
+        return sb.toString();
+    }
+
+    /**
+     * @return save location depending on the operating system
+     */
+    private String getSavePath(){
+        if(System.getProperty("os.name").toUpperCase().contains("WIN")){
+            return System.getenv("APPDATA") + "/TicTacToe";
+        }
+        return System.getenv(("HOME")) + "/.tictactoe";
     }
 
     /**
