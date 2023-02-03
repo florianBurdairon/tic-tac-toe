@@ -1,8 +1,8 @@
 package tictactoe.client;
 
-import tictactoe.CustomSocket;
-import tictactoe.NetworkMessage;
-import tictactoe.ProtocolAction;
+import tictactoe.network.CustomSocket;
+import tictactoe.network.NetworkMessage;
+import tictactoe.network.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid;
 
@@ -45,7 +45,7 @@ public abstract class Client extends Thread{
     protected String role;
 
     /**
-     *
+     *Boolean which is linked with the save or not of a game
      */
     boolean isSavedGame = false;
 

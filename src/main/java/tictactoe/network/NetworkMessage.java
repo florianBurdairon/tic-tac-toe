@@ -1,4 +1,4 @@
-package tictactoe;
+package tictactoe.network;
 
 /**
  * Network message class.

@@ -1,11 +1,8 @@
 package tictactoe;
 
 import org.junit.jupiter.api.Test;
-import tictactoe.client.Client;
-import tictactoe.client.PlayerClient;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import tictactoe.network.NetworkMessage;
+import tictactoe.network.ProtocolAction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

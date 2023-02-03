@@ -1,4 +1,4 @@
-package tictactoe;
+package tictactoe.network;
 
 import tictactoe.exceptions.ProtocolActionException;
 import java.io.BufferedReader;

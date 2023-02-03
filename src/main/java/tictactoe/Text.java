@@ -1,7 +1,17 @@
 package tictactoe;
+/**
+ * Class to show every message and grid during the game, with color.
+ * @author Bernard Alban
+ * @author Halvick Thomas
+ * */
 
 public class Text implements  Displayable{
 
+    /**
+     * Function to show error message
+     * @param errorCode
+     * @return
+     */
     public static String error(String errorCode){
         String out = ANSI_RED;
         switch (errorCode) {
@@ -20,6 +30,11 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Function to show states of connection
+     * @param connectionSuccess
+     * @return
+     */
     public static String connected(boolean connectionSuccess){
         String out;
 
@@ -32,37 +47,65 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Show the input of the grid size
+     * @return
+     */
     public static String askWidth(){
         return ANSI_WHITE + "Choisissez la taille de la grille : " + ANSI_RESET;
     }
 
+    /**
+     * Show the input of the grid dimension
+     * @return
+     */
     public static String askDimension(){
         return ANSI_WHITE + "Choisissez la dimension de la grille (2 pour 2D ou 3 pour 3D) : " + ANSI_RESET;
     }
 
+    /**
+     * Show the input of the turn
+     * @return
+     */
     public static String turn(String role){
         return ANSI_WHITE + "\nA votre tour," + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + " joueur " + role + ANSI_RESET;
     }
 
+    /**
+     * Show the input of the IA
+     * @return
+     */
     public static String iaPlay(String role){
         return ANSI_WHITE + "\nAu tour de l'" + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + "ia " + role + ANSI_RESET;
     }
 
+    /**
+     * Show the input for choose the case
+     * @return
+     */
     public static String askPlay(boolean is3D){
         String out = ANSI_WHITE;
         if (is3D){
-            out += "Choisissez une case où jouer (Ex: B3) : ";
+            out += "Choisissez une case où jouer (Ex: B3) ";
         } else {
-            out += "Choisissez une case où jouer (Ex: 4) : ";
+            out += "Choisissez une case où jouer (Ex: 4) ";
         }
-        out += ANSI_RESET;
+        out += " ou \"save\" pour sauvegarder et quitter ou \"quit\" pour quitter sans sauvegarder :" + ANSI_RESET;
         return out;
     }
 
+    /**
+     * Show the question to confirm the player input
+     * @return
+     */
     public static String askConfirm(){
         return ANSI_WHITE + "Etes-vous sûr de vouloir jouer ici ? (oui / non)" + ANSI_RESET;
     }
 
+    /**
+     * Show the results at the endgame
+     * @return
+     */
     public static String results(String role, boolean isVictory, boolean isDraw){
         String out = "\n" + (role.equals("X")?ANSI_YELLOW:ANSI_BLUE) + "Joueur " + role + " : ";
         if (isDraw){
@@ -78,10 +121,18 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Show the disconnection
+     * @return
+     */
     public static String opponentDisconnected(){
         return ANSI_RED + "Votre adversaire a été déconnecté." + ANSI_RESET;
     }
 
+    /**
+     * Show the question to quit or quit and save
+     * @return
+     */
     public static String askSaveOrQuit(){
         return ANSI_WHITE +
                 "Que souhaitez-vous faire ?" +
@@ -90,6 +141,10 @@ public class Text implements  Displayable{
                 + ANSI_RESET;
     }
 
+    /**
+     * Show the confirmation of the save
+     * @return
+     */
     public static String saved(boolean saveSuccessful){
         String out;
         if (saveSuccessful)
@@ -100,21 +155,36 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Show the disconnection of the player
+     * @return
+     */
     public static String selfDisconnected() {
         return ANSI_RED + "Vous avez été déconnecté du serveur." + ANSI_RESET;
     }
 
+    /**
+     * Show the message of the turn
+     * @return
+     */
     public static String otherStarts(){
         return ANSI_WHITE + "C'est au tour du " + ANSI_YELLOW + "joueur X" + ANSI_RESET;
     }
 
+    /**
+     * Show the end of the application
+     * @return
+     */
     public static String endGame(){
         return ANSI_PURPLE +
                 "Partie terminée !" +
                 "\nMerci d'avoir joué à notre jeu <3"
                 + ANSI_RESET;
     }
-
+    /**
+     * Show the choice of game modes
+     * @return
+     */
     public static String askNetworkMode(){
         return ANSI_WHITE +
                 "\nVeuillez choisir votre mode de réseau pour jouer." +
@@ -126,10 +196,18 @@ public class Text implements  Displayable{
                 + ANSI_RESET;
     }
 
+    /**
+     * Show the invalid network
+     * @return
+     */
     public static String wrongArgs(String arg0){
         return ANSI_RED + "\nMode réseau invalide : " + arg0 + ANSI_RESET;
     }
 
+    /**
+     * Show the choice of opponent
+     * @return
+     */
     public static String askHumanity(){
         return ANSI_WHITE +
                 "\nVeuillez choisir votre type d'adversaire :" +
@@ -139,6 +217,10 @@ public class Text implements  Displayable{
                 + ANSI_RESET;
     }
 
+    /**
+     * Show the result of the start of the game
+     * @return
+     */
     public static String serverStarting(int value_mode){
         String out = ANSI_BLUE + "\nLancement du serveur en mode ";
         switch (value_mode) {
@@ -150,14 +232,26 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Show the IP of connection
+     * @return
+     */
     public static String showIP(String ip) {
         return ANSI_BLUE + "Adresse IP du serveur : " + ip + ANSI_RESET;
     }
 
+    /**
+     * Show the input of IP
+     * @return
+     */
     public static String askIP(){
         return ANSI_WHITE + "Adresse IP du serveur : " + ANSI_RESET;
     }
 
+    /**
+     * Show warnings: a game was saved
+     * @return
+     */
     public static String askSave(String[] saveList){
         String out = ANSI_WHITE +
                 "Des sauvegardes ont été détectées sur le serveur." +
@@ -172,6 +266,10 @@ public class Text implements  Displayable{
         return out;
     }
 
+    /**
+     * Show the input of the savename
+     * @return
+     */
     public static String askSaveName(){
         return ANSI_WHITE + "Saisissez un nom pour la sauvegarde." + ANSI_RESET;
     }

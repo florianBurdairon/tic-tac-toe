@@ -2,9 +2,9 @@ package tictactoe.server;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
-import tictactoe.CustomSocket;
-import tictactoe.NetworkMessage;
-import tictactoe.ProtocolAction;
+import tictactoe.network.CustomSocket;
+import tictactoe.network.NetworkMessage;
+import tictactoe.network.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid;
 import tictactoe.grid.Grid2D;

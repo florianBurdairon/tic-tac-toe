@@ -1,9 +1,8 @@
 package tictactoe.client;
 
 import com.google.gson.Gson;
-import tictactoe.CustomSocket;
-import tictactoe.NetworkMessage;
-import tictactoe.ProtocolAction;
+import tictactoe.network.NetworkMessage;
+import tictactoe.network.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
@@ -11,7 +10,6 @@ import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
 import java.io.*;
-import java.net.Socket;
 
 /**
  * Class to create a player. Made to be used by a real user (human).
@@ -107,8 +105,10 @@ public class PlayerClient extends Client{
     /**
      * Function on reception of "Start Game" by the server. Construct the adequate grid and get its role. If 'X', plays its turn.
      * @param role The role given by the server ('X' or 'O').
+     * @param nextPlayer The next player
      * @param dimension The dimension of the grid (2D or 3D).
      * @param size The size of the grid (its width).
+     * @param serializedGrid The grid which is serialized.
      * @return the message to answer to the server.
      */
     @Override

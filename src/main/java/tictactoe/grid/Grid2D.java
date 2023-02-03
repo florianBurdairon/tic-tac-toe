@@ -307,7 +307,6 @@ public class Grid2D implements Grid, Serializable {
      * @param player player charactere
      * @return true if the player won
      * @throws PositionUsedException
-     * @throws PositionInvalidException
      */
     public boolean place(int x, int y, char player) throws PositionUsedException {
         //check if cell is not already used

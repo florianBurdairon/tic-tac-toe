@@ -1,8 +1,8 @@
 package tictactoe.client;
 
 import org.junit.jupiter.api.Test;
-import tictactoe.NetworkMessage;
-import tictactoe.ProtocolAction;
+import tictactoe.network.NetworkMessage;
+import tictactoe.network.ProtocolAction;
 import tictactoe.Text;
 
 import java.io.ByteArrayInputStream;
