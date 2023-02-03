@@ -5,7 +5,6 @@ import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
 import tictactoe.Text;
-import tictactoe.grid.Grid;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
@@ -13,8 +12,6 @@ import tictactoe.grid.exceptions.PositionUsedException;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
  * Class to create a player. Made to be used by a real user (human).
@@ -28,7 +25,12 @@ public class PlayerClient extends Client{
     /**
      * The entry of the user buffer.
      */
-    private BufferedReader sysIn;
+    private final BufferedReader sysIn;
+
+    /**
+     * Allow to know the last place
+     */
+    private String lastPosition = null;
 
     /**
      * Creates a new Player Client, connected in local ("127.0.0.1") on the default port (9876).
@@ -159,9 +161,7 @@ public class PlayerClient extends Client{
             else opponentRole = 'X';
             try {
                 grid.place(posOpponent, opponentRole);
-            } catch (PositionUsedException e) {
-                throw new RuntimeException(e);
-            } catch (PositionInvalidException e) {
+            } catch (PositionUsedException | PositionInvalidException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -176,6 +176,7 @@ public class PlayerClient extends Client{
             try {
                 System.out.println(Text.askPlay(grid.getClass() == Grid3D.class));
                 position = sysIn.readLine();
+                lastPosition = position;
                 isEntered = true;
             } catch (Exception e) {
                 System.out.println(Text.error("s"));
@@ -185,8 +186,9 @@ public class PlayerClient extends Client{
         param[1]=role;
 
         if(position.equalsIgnoreCase("save")){
+            lastPosition = null;
             if(!isSavedGame){
-                System.out.println("Saisissez un nom pour la sauvegarde.");
+                System.out.println(Text.askSaveName());
                 param[0] = "1";
                 try {
                     String choix = sysIn.readLine();
@@ -213,6 +215,8 @@ public class PlayerClient extends Client{
     public NetworkMessage confirmation() {
         while(true){
             try {
+                grid.display(lastPosition, role.charAt(0));
+                lastPosition = null;
                 System.out.println(Text.askConfirm());
                 String confirm = sysIn.readLine();
                 if(confirm.equalsIgnoreCase("oui") || confirm.isBlank()){
@@ -230,15 +234,13 @@ public class PlayerClient extends Client{
     /**
      * Function which ensure at a second time if the player can place his pawn
      * @param position Position of the pawn placed
-     * @return a protocol action which indicate to the player that he must wait his next round
+     * @return a protocol action which indicate to the player that he must wait to his next turn
      */
     @Override
     public NetworkMessage validate(String position) {
         try {
             grid.place(position, role.charAt(0));
-        } catch (PositionUsedException e) {
-            throw new RuntimeException(e);
-        } catch (PositionInvalidException e) {
+        } catch (PositionUsedException | PositionInvalidException e) {
             throw new RuntimeException(e);
         }
         grid.display();
@@ -256,29 +258,17 @@ public class PlayerClient extends Client{
     public NetworkMessage endGame(String position, char role, char isDraw) {
         try {
             grid.place(position, role);
-        } catch (PositionUsedException e) {
-            throw new RuntimeException(e);
-        } catch (PositionInvalidException e) {
+        } catch (PositionUsedException | PositionInvalidException e) {
             throw new RuntimeException(e);
         }
-        /*String out = "Joueur " + this.role + " : ";
-        if (isDraw == '1'){
-            out += "Egalité...";
-        }
-        else if (this.role.charAt(0) == role){
-            out += "Victoire !";
-        }
-        else{
-            out += "Défaite...";
-        }*/
         System.out.println(Text.results(this.role, this.role.charAt(0) == role, isDraw == '1'));
         grid.display();
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
 
     /**
-     * Function which manage the case where a opponent player is unintentionally disconnected from the server
-     * It asks to the last player what he can do: quit or quit and save the game
+     * Function which manage the case where an opponent player is unintentionally disconnected from the server
+     * It asks the last player what he can do: quit or quit and save the game
      * @return The protocol action link to quit or quit and save
      */
     @Override
@@ -290,13 +280,13 @@ public class PlayerClient extends Client{
             try {
                 String choix = sysIn.readLine();
                 if(choix.equals("0") || choix.equals("1")) param[0] = choix;
-                else System.out.println("Erreur lors du choix.");
+                else System.out.println(Text.error("s"));
             } catch (Exception e) {
                 System.out.println(Text.error("s"));
             }
         }
         while (!isSavedGame && param[1] == null){
-            System.out.println("Saisissez un nom pour la sauvegarde.");
+            System.out.println(Text.askSaveName());
             try {
                 String choix = sysIn.readLine();
                 if(!choix.equals("")) param[1] = choix;

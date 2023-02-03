@@ -6,17 +6,9 @@ public class Text {
      */
     static String ANSI_RESET = "\u001B[0m";
     /**
-     * ANSI black code
-     */
-    static String ANSI_BLACK = "\u001B[30m";
-    /**
      * ANSI red code
      */
     static String ANSI_RED = "\u001B[31;1m";
-    /**
-     * ANSI green code
-     */
-    String ANSI_GREEN = "\u001B[32m";
     /**
      * ANSI yellow code
      */
@@ -30,33 +22,30 @@ public class Text {
      */
     static String ANSI_PURPLE = "\u001B[95m";
     /**
-     * ANSI cyan code
-     */
-    static String ANSI_CYAN = "\u001B[36m";
-    /**
      * ANSI white code
      */
     static String ANSI_WHITE = "\u001B[97m";
 
     public static String error(String errorCode){
         String out = ANSI_RED;
-        switch (errorCode){
+        switch (errorCode) {
             // Local error
-            case "s": out += "Erreur de saisie"; break;
-            case "n": out += "Erreur réseau. Partie annulée."; break;
+            case "s" -> out += "Erreur de saisie";
+            case "n" -> out += "Erreur réseau. Partie annulée.";
+
 
             // Server error
-            case "0": out += "Erreur sur la sélection des dimensions."; break;
-            case "1": out += "Impossible de jouer ici - Cette case est déjà utilisée."; break;
-            case "2": out += "Impossible de jouer ici - Cette case ne fait pas partie de la grille."; break;
-            default: out += "Erreur inconnue - N°" + errorCode; break;
+            case "0" -> out += "Erreur sur la sélection des dimensions.";
+            case "1" -> out += "Impossible de jouer ici - Cette case est déjà utilisée.";
+            case "2" -> out += "Impossible de jouer ici - Cette case ne fait pas partie de la grille.";
+            default -> out += "Erreur inconnue - N°" + errorCode;
         }
         out += ANSI_RESET;
         return out;
     }
 
     public static String connected(boolean connectionSuccess){
-        String out = "";
+        String out;
 
         if (connectionSuccess){
             out = ANSI_BLUE + "Connexion réalisée avec succès";
@@ -175,10 +164,10 @@ public class Text {
 
     public static String serverStarting(int value_mode){
         String out = ANSI_BLUE + "\nLancement du serveur en mode ";
-        switch (value_mode){
-            case 0: out += "local"; break;
-            case 1: out += "hébergeur"; break;
-            case 3: out += "serveur"; break;
+        switch (value_mode) {
+            case 0 -> out += "local";
+            case 1 -> out += "hébergeur";
+            case 3 -> out += "serveur";
         }
         out += "..." + ANSI_RESET;
         return out;
@@ -204,5 +193,9 @@ public class Text {
         }
         out += ANSI_RESET;
         return out;
+    }
+
+    public static String askSaveName(){
+        return ANSI_WHITE + "Saisissez un nom pour la sauvegarde." + ANSI_RESET;
     }
 }

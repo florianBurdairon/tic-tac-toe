@@ -4,7 +4,7 @@ import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
 
 public class Main {
-    public  static void main(String args[]){
+    public  static void main(String[] args){
         new Grid2D(3).display();
         System.out.println();
         new Grid2D(4).display();

@@ -6,8 +6,6 @@ import tictactoe.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid;
 
-import java.util.Optional;
-
 /**
  * Class to create a client. It needs to connect to a server.
  * @author Bernard Alban

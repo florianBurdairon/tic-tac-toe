@@ -1,7 +1,6 @@
 package tictactoe.server;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
@@ -33,7 +32,7 @@ public class Server extends Thread {
     /**
      * Integer to keep the port of the connexion.
      */
-    private int port;
+    private final int port;
 
     /**
      * The first client to connect to the server, he will choose the grid dimensions.
@@ -281,7 +280,7 @@ public class Server extends Thread {
                         }
                     }
                 }
-                catch (NumberFormatException e){}
+                catch (NumberFormatException ignored){}
             }
             if(action == ProtocolAction.NetworkError) {
                 System.out.println(Text.error("n"));
@@ -321,14 +320,10 @@ public class Server extends Thread {
         if(isClient1Turn){
             param1[0] = "X";
             param2[0] = "O";
-            param1[1] = "X";
-            param2[1] = "X";
         }
         else {
             param1[0] = "O";
             param2[0] = "X";
-            param1[1] = "X";
-            param2[1] = "X";
         }
 
         if(serializedGrid != null){
@@ -357,9 +352,9 @@ public class Server extends Thread {
 
     /**
      * Function which check the correct placement of a pawn
-     * @param client
-     * @param position
-     * @param role
+     * @param client the client that sent the placement
+     * @param position the position of the pawn
+     * @param role the role of the client
      */
     public void verification(CustomSocket client, String position, char role){
         try {
@@ -379,9 +374,9 @@ public class Server extends Thread {
     /**
      * Function dedicated to manage the game: send the message to place pawns to players in turn,
      * execute the verification if the placement is lawful or not and if there's a winner
-     * @param client1
-     * @param client2
-     * @return
+     * @param client1 the client that played
+     * @param client2 the opponent player
+     * @return true if there is a winner
      */
     public boolean play(CustomSocket client1, CustomSocket client2){
         try {
@@ -395,7 +390,7 @@ public class Server extends Thread {
                 param[0] = lastPlaceTurn[0];
                 param[1] = lastPlaceTurn[1];
                 param[2] = "0";
-                if (!isWinner && nbCellFree == 0) param[2] = "1";
+                if (!isWinner) param[2] = "1";
                 client1.send(new NetworkMessage(action, param));
                 Thread.sleep(200);
                 client2.send(new NetworkMessage(action, param));
@@ -403,7 +398,7 @@ public class Server extends Thread {
                     File saveDirectory = new File(savePath);
                     FileUtils.deleteDirectory(saveDirectory);
                 }
-                return isWinner || nbCellFree == 0;
+                return true;
             }
             else{
                 String[] param;
@@ -412,13 +407,7 @@ public class Server extends Thread {
                 Thread.sleep(500);
                 client2.send(new NetworkMessage(ProtocolAction.Play, param));
             }
-        } catch (PositionUsedException e) {
-            throw new RuntimeException(e);
-        } catch (PositionInvalidException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (PositionUsedException | PositionInvalidException | InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
         return false;
@@ -426,8 +415,8 @@ public class Server extends Thread {
 
     /**
      * Function which manage every type of error by sending the correct error message
-     * @param client
-     * @param errorCode
+     * @param client the client to send the error to
+     * @param errorCode the error code of the error
      */
     public void error(CustomSocket client, String errorCode){
         String[] param = {errorCode};
@@ -436,8 +425,8 @@ public class Server extends Thread {
     }
 
     /**
-     * Function which manage an network error , when a player is disconnected
-     * @param client
+     * Function which manage a network error , when a player is disconnected
+     * @param client the client that is still connected
      */
     public void networkError(CustomSocket client, String existSavePath){
         String[] param = {existSavePath};
@@ -446,7 +435,7 @@ public class Server extends Thread {
 
     /**
      * Function which manage the quit action; the last player is then disconnected and the server is stopped
-     * @param client
+     * @param client the last connected client
      */
     public void quit(CustomSocket client){
         client.send(new NetworkMessage(ProtocolAction.Quit));
@@ -458,7 +447,8 @@ public class Server extends Thread {
      * Safe action is link with the serialization of the grid and the last player who was connected.
      * The serialization create 2 folders, which are stored in a folder name "TicTacToe" directly on the computer
      * of the host in the folder "APPDATA" if the OS=Windows (WIN) or in the folder named "HOME" if OS=Linux
-     * @param client
+     * @param client the client that asked to save
+     * @param savename the name of the save
      */
     public void safeQuit(CustomSocket client, String savename){
         quit(client);
@@ -499,8 +489,6 @@ public class Server extends Thread {
             writer.close();
 
             System.out.println("Sauvegarde réalisée avec succès.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -524,9 +512,9 @@ public class Server extends Thread {
             File[] files = file.listFiles();
             if (files != null){
                 ArrayList<String> list = new ArrayList<>();
-                for (int i = 0; i < files.length; i++){
-                    if (files[i].isDirectory()){
-                        list.add(files[i].getName());
+                for (File value : files) {
+                    if (value.isDirectory()) {
+                        list.add(value.getName());
                     }
                 }
                 directoryList = new String[list.size()];
@@ -614,7 +602,7 @@ public class Server extends Thread {
                 }
             }
             if(action == ProtocolAction.NetworkError) {
-                System.out.println("Erreur réseau. Partie annulée.");
+                System.out.println(Text.error("n"));
                 return true;
             }
         }
