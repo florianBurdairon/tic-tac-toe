@@ -1,4 +1,7 @@
 tictactoe
 tictactoe.client
 tictactoe.exceptions
+tictactoe.grid
+tictactoe.grid.exceptions
+tictactoe.network
 tictactoe.server

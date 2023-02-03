@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"tictactoe"},{"l":"tictactoe.client"},{"l":"tictactoe.exceptions"},{"l":"tictactoe.server"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"tictactoe"},{"l":"tictactoe.client"},{"l":"tictactoe.exceptions"},{"l":"tictactoe.grid"},{"l":"tictactoe.grid.exceptions"},{"l":"tictactoe.network"},{"l":"tictactoe.server"}];updateSearchResults();
