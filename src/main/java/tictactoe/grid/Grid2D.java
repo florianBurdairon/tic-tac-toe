@@ -384,4 +384,15 @@ public class Grid2D implements Grid, Serializable {
             System.out.println(ligne);
         }
     }
+
+    /**
+     * 2d Grid as string
+     */
+    public String toString() {
+        String result = "";
+        for (String ligne: this.getGridAsStrings()) {
+            result+=ligne+'\n';
+        }
+        return result;
+    }
 }

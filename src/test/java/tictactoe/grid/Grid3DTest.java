@@ -11,7 +11,11 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+/**
+ * Class Grid3DTest
+ * @author Halvick Thomas
+ * @version 1
+ */
 public class Grid3DTest {
     @Test
     public void position_valid() throws Exception {
@@ -141,7 +145,7 @@ public class Grid3DTest {
     }
 
     @Test
-    public void get_set_value() throws Exception {
+    public void get_set_value() {
         Random random = new Random();
         int size = 3;
         Grid grid = new Grid3D(size);
@@ -153,8 +157,7 @@ public class Grid3DTest {
     }
 
     @Test
-    public void get_total_size() throws Exception {
-        Random random = new Random();
+    public void get_total_size()  {
         int size = 3;
         Grid grid = new Grid3D(size);
         assertEquals(size*size*size,grid.getTotalSize());

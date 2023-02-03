@@ -9,6 +9,11 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Class NetworkMessageTest
+ * @author Halvick Thomas
+ * @version 1
+ */
 public class NetworkMessageTest {
 
     @Test

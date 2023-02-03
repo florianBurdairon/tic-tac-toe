@@ -6,6 +6,9 @@ import tictactoe.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid;
 
+import java.io.IOException;
+import java.net.Socket;
+
 /**
  * Class to create a client. It needs to connect to a server.
  * @author Bernard Alban
@@ -57,7 +60,12 @@ public abstract class Client extends Thread{
      */
     @Override
     public void run() {
-
+        try{
+            this.connectToServer();
+            System.out.println(Text.connected(true));
+        } catch (Exception e) {
+            System.out.println(Text.connected(false));
+        }
         // The client is still running
         boolean isRunning = true;
 
@@ -120,6 +128,15 @@ public abstract class Client extends Thread{
 
             if (isRunning) server.send(networkAnswer);
         }
+    }
+
+
+    /**
+     * Connect to the server using the serverIp and his port
+     * @throws IOException
+     */
+    private void connectToServer() throws IOException {
+        this.server = new CustomSocket(new Socket(this.serverIP, this.port), true);
     }
 
     public abstract NetworkMessage selectDimensions();
