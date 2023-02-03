@@ -102,8 +102,8 @@ public class Server extends Thread {
             //System.out.println("Joueur 1 connecté");
             client2 = new CustomSocket(server.accept(), false);
             //System.out.println("Joueur 2 connecté");
-
-
+            
+            
             //System.out.println("Dimensions sélectionnées");
             boolean isNetWorkError;
             String path;
@@ -608,5 +608,26 @@ public class Server extends Thread {
         }
         else return selectDimensions();
         return false;
+    }
+
+    /**
+     * @return the client1's socket
+     */
+    public CustomSocket getClient1(){
+        return this.client1;
+    }
+
+    /**
+     * @return the client2's socket
+     */
+    public CustomSocket getClient2(){
+        return this.client2;
+    }
+
+    /**
+     * @return the grid
+     */
+    public Grid getGrid() {
+        return grid;
     }
 }

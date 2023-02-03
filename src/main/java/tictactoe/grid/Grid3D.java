@@ -418,4 +418,15 @@ public class Grid3D implements Grid, Serializable {
             System.out.println(ligne);
         }
     }
+
+    /**
+     * 3d Grid as string
+     */
+    public String toString() {
+        String result = "";
+        for (String ligne: this.getGridAsStrings()) {
+            result+=ligne+'\n';
+        }
+        return result;
+    }
 }

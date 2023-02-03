@@ -50,30 +50,11 @@ public class PlayerClient extends Client{
     }
 
     /**
-     * Main function of the player client. Connects the player to the server and then runs just like any client.
-     */
-    @Override
-    public void run(){
-        try{
-            server = new CustomSocket(new Socket(this.serverIP, this.port), true);
-            System.out.println(Text.connected(true));
-        } catch (Exception e) {
-            System.out.println(Text.connected(false));
-        }
-        try {
-            super.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
     * Function which send a message with the grid length and his dimension to the server.
      * @return a network message
      */
     @Override
     public NetworkMessage selectDimensions() {
-
         String[] param = new String[2];
 
         String GridLength;

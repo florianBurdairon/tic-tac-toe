@@ -10,7 +10,11 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Class Grid2DTest
+ * @author Halvick Thomas
+ * @version 1
+ */
 public class Grid2DTest {
 
     @Test
@@ -187,7 +191,7 @@ public class Grid2DTest {
     }
 
     @Test
-    public void get_set_value() throws Exception {
+    public void get_set_value(){
         Random random = new Random();
         int size = 3;
         Grid grid = new Grid2D(size);
@@ -199,8 +203,7 @@ public class Grid2DTest {
     }
 
     @Test
-    public void get_total_size() throws Exception {
-        Random random = new Random();
+    public void get_total_size(){
         int size = 3;
         Grid grid = new Grid2D(size);
         assertEquals(size*size,grid.getTotalSize());

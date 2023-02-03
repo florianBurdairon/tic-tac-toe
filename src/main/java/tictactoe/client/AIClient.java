@@ -33,21 +33,6 @@ public class AIClient extends Client{
     }
 
     @Override
-    public void run(){
-        try{
-            server = new CustomSocket(new Socket(this.serverIP, this.port), true);
-            System.out.println(Text.connected(true));
-        } catch (Exception e) {
-            System.out.println(Text.connected(false));
-        }
-        try {
-            super.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public NetworkMessage selectDimensions() {
         String[] param = new String[2];
 
@@ -118,6 +103,19 @@ public class AIClient extends Client{
         return new NetworkMessage(ProtocolAction.Place,param);
     }
 
+    /**
+     * Minmax algorithm to choose the best (if the AI is not too stupid) move
+     * @param depth the current depth
+     * @param maximizing if maximizing is true we chose the best move for the AI else the best move for his opponent
+     * @param win return if last move is winner or not
+     * @param alpha Alpha–beta pruning to improve performances
+     * @param beta Alpha–beta pruning to improve performances
+     * @return a value representing the move (0 = nothing |draw, < 0 = losing, >0 = winning)
+     * @throws PositionInvalidException
+     * @throws PositionUsedException
+     * @see <a href="https://en.wikipedia.org/wiki/Minimax">MinMax algorithm</a>
+     * @see <a href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning">Alpha–beta pruning</a>
+     */
     private int minmax(int depth, boolean maximizing,boolean win, int alpha, int beta) throws PositionInvalidException, PositionUsedException {
         if (win){
             return maximizing ? -10 : 10;
