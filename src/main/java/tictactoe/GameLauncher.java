@@ -36,6 +36,15 @@ public class GameLauncher {
                 default: throw new InvalidParameterException();
             }
         }
+
+        public int getValue(){
+            return switch (this) {
+                case Local -> 0;
+                case Host -> 1;
+                case Client -> 2;
+                case Server -> 3;
+            };
+        }
     }
 
     /**
@@ -102,13 +111,14 @@ public class GameLauncher {
                 // Starting Server
                 Server server_local = new Server();
                 server_local.start();
-                System.out.println(Text.serverStarting("local"));
+                System.out.println(Text.serverStarting(netmode.getValue()));
                 TimeUnit.SECONDS.sleep(1);
                 //System.out.println("Serveur en attente de client(s) !");
 
                 // Starting first player
                 Client client_local_1 = new PlayerClient();
                 client_local_1.start();
+                TimeUnit.SECONDS.sleep(1);
                 // Starting second player based on user's choice
                 Client client_local_2;
                 if (opponentIsHuman){
@@ -123,7 +133,7 @@ public class GameLauncher {
             case Host: // 1 Server + 1 Client
                 Server server_host = new Server();
                 server_host.start();
-                System.out.println(Text.serverStarting("hébergeur"));
+                System.out.println(Text.serverStarting(netmode.getValue()));
                 TimeUnit.SECONDS.sleep(1);
                 //System.out.println("Serveur en attente de client(s) !");
                 System.out.println(Text.showIP(server_host.getIpAddress()));
@@ -147,7 +157,7 @@ public class GameLauncher {
             case Server: // 1 Server
                 Server server = new Server();
                 server.start();
-                System.out.println(Text.serverStarting("serveur"));
+                System.out.println(Text.serverStarting(netmode.getValue()));
                 TimeUnit.SECONDS.sleep(1);
                 //System.out.println("Serveur en attente de client(s) !");
                 System.out.println(Text.showIP(server.getIpAddress()));

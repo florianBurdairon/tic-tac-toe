@@ -138,6 +138,10 @@ public class Text {
         return ANSI_RED + "Vous avez été déconnecté du serveur." + ANSI_RESET;
     }
 
+    public static String otherStarts(){
+        return ANSI_WHITE + "C'est au tour du " + ANSI_YELLOW + "joueur X" + ANSI_RESET;
+    }
+
     public static String endGame(){
         return ANSI_PURPLE +
                 "Partie terminée !" +
@@ -169,8 +173,15 @@ public class Text {
                 + ANSI_RESET;
     }
 
-    public static String serverStarting(String mode){
-        return ANSI_BLUE + "\nLancement du serveur en mode " + mode + "..." + ANSI_RESET;
+    public static String serverStarting(int value_mode){
+        String out = ANSI_BLUE + "\nLancement du serveur en mode ";
+        switch (value_mode){
+            case 0: out += "local"; break;
+            case 1: out += "hébergeur"; break;
+            case 3: out += "serveur"; break;
+        }
+        out += "..." + ANSI_RESET;
+        return out;
     }
 
     public static String showIP(String ip) {
@@ -179,5 +190,19 @@ public class Text {
 
     public static String askIP(){
         return ANSI_WHITE + "Adresse IP du serveur : " + ANSI_RESET;
+    }
+
+    public static String askSave(String[] saveList){
+        String out = ANSI_WHITE +
+                "Des sauvegardes ont été détectées sur le serveur." +
+                "\nSaisissez le numéro associé à la sauvegarde que vous souhaitez utiliser." +
+                "\n  0 - Commencer une nouvelle partie";
+        int i = 1;
+        for (String save : saveList) {
+            out += "\n  " + i + " - " + save;
+            i++;
+        }
+        out += ANSI_RESET;
+        return out;
     }
 }
