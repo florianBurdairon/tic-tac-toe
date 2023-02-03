@@ -1,11 +1,11 @@
 package tictactoe.client;
 
 
+import com.google.gson.Gson;
 import tictactoe.CustomSocket;
 import tictactoe.NetworkMessage;
 import tictactoe.ProtocolAction;
 import tictactoe.Text;
-import tictactoe.grid.Grid;
 import tictactoe.grid.Grid2D;
 import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
@@ -43,13 +43,28 @@ public class AIClient extends Client{
     }
 
     @Override
-    public NetworkMessage startGame(String role, String dimension, String size) {
+    public NetworkMessage resumeGame(String[] saveList) {
+        return new NetworkMessage(ProtocolAction.NONE);
+    }
+
+    @Override
+    public NetworkMessage startGame(String role, String nextPlayer, String dimension, String size, String serializedGrid) {
         this.role = role;
-        if(dimension.equals("3")) this.grid = new Grid3D(Integer.parseInt(size));
+        if(serializedGrid != null) {
+            isSavedGame = true;
+
+            //Deserialize the json string
+            Gson gson = new Gson();
+            if(dimension.equals("3")) this.grid = gson.fromJson(serializedGrid, Grid3D.class);
+            else this.grid = gson.fromJson(serializedGrid, Grid2D.class);
+        }
+        else if(dimension.equals("3")) this.grid = new Grid3D(Integer.parseInt(size));
         else this.grid = new Grid2D(Integer.parseInt(size));
 
-        if (this.role.equals("X")){
+        if (nextPlayer.equals(this.role)){
             return play(null);
+        }else {
+            System.out.println(Text.otherStarts());
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
@@ -62,9 +77,7 @@ public class AIClient extends Client{
             else opponentRole = 'X';
             try {
                 grid.place(posOpponent, opponentRole);
-            } catch (PositionUsedException e) {
-                throw new RuntimeException(e);
-            } catch (PositionInvalidException e) {
+            } catch (PositionUsedException | PositionInvalidException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -132,6 +145,10 @@ public class AIClient extends Client{
             for (int x = 0; x < this.grid.getTotalSize(); x++) {
                 if (this.grid.getValue(x) != '\0') continue;
                 int result=  minmax(depth - 1, true,this.grid.place(x, this.role.charAt(0) == 'X' ? 'O' : 'X'),alpha,beta);
+                if(depth == 5 && result == -10){
+                    grid.display();
+                    System.out.println(x);
+                }
                 if(result < val)val=result;
                 this.grid.setValue(x,'\0');
                 if (val < alpha)  return val;
@@ -150,9 +167,7 @@ public class AIClient extends Client{
     public NetworkMessage validate(String position) {
         try {
             grid.place(position, role.charAt(0));
-        } catch (PositionUsedException e) {
-            throw new RuntimeException(e);
-        } catch (PositionInvalidException e) {
+        } catch (PositionUsedException | PositionInvalidException e) {
             throw new RuntimeException(e);
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
@@ -167,4 +182,7 @@ public class AIClient extends Client{
     public NetworkMessage opponentDisconnected() {
         return new NetworkMessage(ProtocolAction.NONE);
     }
+
+    @Override
+    public void quit() {}
 }

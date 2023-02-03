@@ -1,25 +1,27 @@
 package tictactoe;
 
 public class Text implements  Displayable{
+
     public static String error(String errorCode){
         String out = ANSI_RED;
-        switch (errorCode){
+        switch (errorCode) {
             // Local error
-            case "s": out += "Erreur de saisie"; break;
-            case "n": out += "Erreur réseau. Partie annulée."; break;
+            case "s" -> out += "Erreur de saisie";
+            case "n" -> out += "Erreur réseau. Partie annulée.";
+
 
             // Server error
-            case "0": out += "Erreur sur la sélection des dimensions."; break;
-            case "1": out += "Impossible de jouer ici - Cette case est déjà utilisée."; break;
-            case "2": out += "Impossible de jouer ici - Cette case ne fait pas partie de la grille."; break;
-            default: out += "Erreur inconnue - N°" + errorCode; break;
+            case "0" -> out += "Erreur sur la sélection des dimensions.";
+            case "1" -> out += "Impossible de jouer ici - Cette case est déjà utilisée.";
+            case "2" -> out += "Impossible de jouer ici - Cette case ne fait pas partie de la grille.";
+            default -> out += "Erreur inconnue - N°" + errorCode;
         }
         out += ANSI_RESET;
         return out;
     }
 
     public static String connected(boolean connectionSuccess){
-        String out = "";
+        String out;
 
         if (connectionSuccess){
             out = ANSI_BLUE + "Connexion réalisée avec succès";
@@ -102,6 +104,10 @@ public class Text implements  Displayable{
         return ANSI_RED + "Vous avez été déconnecté du serveur." + ANSI_RESET;
     }
 
+    public static String otherStarts(){
+        return ANSI_WHITE + "C'est au tour du " + ANSI_YELLOW + "joueur X" + ANSI_RESET;
+    }
+
     public static String endGame(){
         return ANSI_PURPLE +
                 "Partie terminée !" +
@@ -133,8 +139,15 @@ public class Text implements  Displayable{
                 + ANSI_RESET;
     }
 
-    public static String serverStarting(String mode){
-        return ANSI_BLUE + "\nLancement du serveur en mode " + mode + "..." + ANSI_RESET;
+    public static String serverStarting(int value_mode){
+        String out = ANSI_BLUE + "\nLancement du serveur en mode ";
+        switch (value_mode) {
+            case 0 -> out += "local";
+            case 1 -> out += "hébergeur";
+            case 3 -> out += "serveur";
+        }
+        out += "..." + ANSI_RESET;
+        return out;
     }
 
     public static String showIP(String ip) {
@@ -143,5 +156,23 @@ public class Text implements  Displayable{
 
     public static String askIP(){
         return ANSI_WHITE + "Adresse IP du serveur : " + ANSI_RESET;
+    }
+
+    public static String askSave(String[] saveList){
+        String out = ANSI_WHITE +
+                "Des sauvegardes ont été détectées sur le serveur." +
+                "\nSaisissez le numéro associé à la sauvegarde que vous souhaitez utiliser." +
+                "\n  0 - Commencer une nouvelle partie";
+        int i = 1;
+        for (String save : saveList) {
+            out += "\n  " + i + " - " + save;
+            i++;
+        }
+        out += ANSI_RESET;
+        return out;
+    }
+
+    public static String askSaveName(){
+        return ANSI_WHITE + "Saisissez un nom pour la sauvegarde." + ANSI_RESET;
     }
 }
