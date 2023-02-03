@@ -352,8 +352,10 @@ public class Grid3D implements Grid, Serializable {
      * @throws PositionInvalidException
      */
     public boolean place(int position, char player) throws PositionUsedException,PositionInvalidException {
-        boolean win2D = this.grid[position/(this.size*this.size)].place(position%this.size,(position/this.size)%this.size,player);
-        return  win2D | checkDepth(player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
+        int x = position%this.size;
+        int y = (position/this.size)%this.size;
+        boolean win2D = this.grid[position/(this.size*this.size)].place(x,y,player);
+        return  win2D | checkDepth(x,y,player) | checkCrossX(player) |  checkCrossY(player) | checkDiagonals(player);
     }
 
     /**

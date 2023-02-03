@@ -1,5 +1,6 @@
 package tictactoe.grid;
 
+import tictactoe.Displayable;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
