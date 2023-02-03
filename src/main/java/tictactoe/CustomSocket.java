@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +24,7 @@ public class CustomSocket {
         public void run() {
             do {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     if (isConnected) {
                         //System.out.println("Sent ping");
                         out.println("p");
@@ -42,8 +43,7 @@ public class CustomSocket {
      */
     class Firewall extends Thread {
 
-        private long timeOfLastHeartbeat;
-        private boolean isServer;
+        private final boolean isServer;
 
         /**
          * Create the firewall.
@@ -53,16 +53,19 @@ public class CustomSocket {
             this.isServer = isServer;
         }
 
+        /**
+         * Main function ,which ensure the connexion.
+         */
         @Override
         public void run() {
-            timeOfLastHeartbeat = System.currentTimeMillis();
+            long timeOfLastHeartbeat = System.currentTimeMillis();
             do {
                 // Get message from buffer
-                String msg = "";
+                String msg;
                 try {
                     while (!in.ready() && isConnected) {
                         TimeUnit.MILLISECONDS.sleep(150);
-                        if (System.currentTimeMillis() - timeOfLastHeartbeat > 10000) {
+                        if (System.currentTimeMillis() - timeOfLastHeartbeat > 5000) {
                             System.out.println("DISCONNECTED");
                             isConnected = false;
                         }
@@ -78,7 +81,7 @@ public class CustomSocket {
                 }
 
                 // If there is a message :
-                if (msg != "") {
+                if (!Objects.equals(msg, "")) {
                     // If the message is a heartbeat :
                     if (msg.charAt(0) == 'p') { // We send pack a heartbeat
                         //System.out.println("Received heartbeat");
@@ -100,10 +103,6 @@ public class CustomSocket {
     }
 
     /**
-     * The original java socket to manage connexion.
-     */
-    private Socket socket;
-    /**
      * The connexion buffer to read from.
      */
     private BufferedReader in;
@@ -112,7 +111,7 @@ public class CustomSocket {
      */
     private PrintWriter out;
 
-    private Firewall firewall;
+    private final Firewall firewall;
     private HeartbeatEmitter heartbeatEmitter;
 
     /**
@@ -122,7 +121,7 @@ public class CustomSocket {
     /**
      * Boolean to know if this side of the connexion is the server side.
      */
-    private boolean isServer;
+    private final boolean isServer;
 
     /**
      * Message read from the connexion, never a heartbeat
@@ -136,11 +135,10 @@ public class CustomSocket {
      */
     public CustomSocket (Socket socket, boolean isServer) {
         this.isServer = isServer;
-        this.socket = socket;
 
         try {
-            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            this.out = new PrintWriter(this.socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.out = new PrintWriter(socket.getOutputStream(), true);
         } catch (Exception e) {
             System.out.println("Error on socket creation");
         }
@@ -173,7 +171,7 @@ public class CustomSocket {
             if (this.isServer){
                 heartbeatEmitter.join();
             }
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
     /**
@@ -184,9 +182,9 @@ public class CustomSocket {
         String msg = "" + networkMessage.getProtocolAction().getValue();
 
         if (networkMessage.getParameters() != null){
-            msg += ":";
+            msg += "::";
             for (String s : networkMessage.getParameters()) {
-                msg += s + ",";
+                msg += s + ",,";
             }
         }
         out.println(msg);
@@ -220,7 +218,7 @@ public class CustomSocket {
 
         // Get the message once it has been through the firewall
         try {
-            while (msg_to_listener == "") {
+            while (Objects.equals(msg_to_listener, "")) {
                 TimeUnit.MILLISECONDS.sleep(500);
             }
             msg = msg_to_listener;
@@ -234,8 +232,8 @@ public class CustomSocket {
         NetworkMessage networkMessage = new NetworkMessage();
 
         // If there are parameters
-        if (msg.contains(":")) {
-            String[] message = msg.split(":");
+        if (msg.contains("::")) {
+            String[] message = msg.split("::");
 
             ProtocolAction protocolAction = ProtocolAction.fromInt(Integer.parseInt(message[0]));
             if (protocolAction == ProtocolAction.NONE){
@@ -244,7 +242,7 @@ public class CustomSocket {
             }
             networkMessage.setProtocolAction(protocolAction);
 
-            message = message[1].split(",");
+            message = message[1].split(",,");
             networkMessage.setParameters(message);
 
             return networkMessage;
