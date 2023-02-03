@@ -44,6 +44,11 @@ public abstract class Client extends Thread{
     protected String role;
 
     /**
+     *
+     */
+    boolean isSavedGame = false;
+
+    /**
      * Creates a client with the given server ip address and the port.
      * @param serverIP The server ip address to connect the client to.
      * @param port The port to connect the client to the server.

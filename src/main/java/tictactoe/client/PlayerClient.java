@@ -127,6 +127,8 @@ public class PlayerClient extends Client{
     public NetworkMessage startGame(String role, String nextPlayer, String dimension, String size, String serializedGrid) {
         this.role = role;
         if(serializedGrid != null) {
+            isSavedGame = true;
+
             //Deserialize the json string
             Gson gson = new Gson();
             if(dimension.equals("3")) this.grid = gson.fromJson(serializedGrid, Grid3D.class);
@@ -183,14 +185,17 @@ public class PlayerClient extends Client{
         param[1]=role;
 
         if(position.equalsIgnoreCase("save")){
-            System.out.println("Saisissez un nom pour la sauvegarde.");
-            param[0] = "1";
-            try {
-                String choix = sysIn.readLine();
-                if(!choix.equals("")) param[1] = choix;
-            } catch (Exception e) {
-                System.out.println(Text.error("s"));
+            if(!isSavedGame){
+                System.out.println("Saisissez un nom pour la sauvegarde.");
+                param[0] = "1";
+                try {
+                    String choix = sysIn.readLine();
+                    if(!choix.equals("")) param[1] = choix;
+                } catch (Exception e) {
+                    System.out.println(Text.error("s"));
+                }
             }
+            else param[1] = "0";
             return new NetworkMessage(ProtocolAction.Quit,param);
         }
         if(position.equalsIgnoreCase("quit")){
@@ -290,7 +295,7 @@ public class PlayerClient extends Client{
                 System.out.println(Text.error("s"));
             }
         }
-        while (param[1] == null){
+        while (!isSavedGame && param[1] == null){
             System.out.println("Saisissez un nom pour la sauvegarde.");
             try {
                 String choix = sysIn.readLine();
@@ -299,6 +304,7 @@ public class PlayerClient extends Client{
                 System.out.println(Text.error("s"));
             }
         }
+        if(isSavedGame) param[1] = "0";
         return new NetworkMessage(ProtocolAction.Quit, param);
     }
 

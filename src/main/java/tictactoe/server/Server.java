@@ -141,6 +141,7 @@ public class Server extends Thread {
             String[] paramClient2 = {};
             boolean isMsgClient1Used = true;
             boolean isMsgClient2Used = true;
+            String existSavePath = savePath != null ? "1" : "0";
 
             while(!isEndGame && !isNetWorkError){
                 if(isMsgClient1Used){
@@ -153,7 +154,7 @@ public class Server extends Thread {
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.NetworkError || msgClient2.getProtocolAction() == ProtocolAction.NetworkError){
                     CustomSocket client = (msgClient1.getProtocolAction() == ProtocolAction.NetworkError) ? client2 : client1;
-                    networkError(client);
+                    networkError(client, existSavePath);
                     if (msgClient1.getProtocolAction() == ProtocolAction.NetworkError) {
                         isMsgClient1Used = false;
                         isMsgClient2Used = true;
@@ -164,21 +165,31 @@ public class Server extends Thread {
                     }
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Quit || msgClient2.getProtocolAction() == ProtocolAction.Quit){
-                    CustomSocket client = (msgClient1.getProtocolAction() == ProtocolAction.Quit) ? client1 : client2;
-                    quit(client);
                     if (msgClient1.getProtocolAction() == ProtocolAction.Quit) {
-                        if(paramClient1[0].equals("0")) quit(client1);
-                        else safeQuit(client1, paramClient1[1]);
+                        if(paramClient1[0].equals("0")) {
+                            quit(client1);
+                            if(client2.isConnected()) networkError(client2, existSavePath);
+                        }
+                        else {
+                            safeQuit(client1, paramClient1[1]);
+                            if(client2.isConnected()) quit(client2);
+                        }
                         isMsgClient1Used = true;
-                        isMsgClient2Used = false;
+                        isMsgClient2Used = client2.isConnected();
                     }
                     else {
-                        if(paramClient1[0].equals("0")) quit(client2);
-                        else safeQuit(client2, paramClient2[1]);
-                        isMsgClient1Used = false;
+                        if(paramClient2[0].equals("0")) {
+                            quit(client2);
+                            if(client1.isConnected()) networkError(client1, existSavePath);
+                        }
+                        else {
+                            safeQuit(client2, paramClient2[1]);
+                            if(client1.isConnected()) quit(client1);
+                        }
+                        isMsgClient1Used = client1.isConnected();
                         isMsgClient2Used = true;
                     }
-                    isNetWorkError = true;
+                    if(!client1.isConnected() && !client2.isConnected()) isNetWorkError = true;
                 }
                 if(msgClient1.getProtocolAction() == ProtocolAction.Place && msgClient2.getProtocolAction() == ProtocolAction.WaitMessage){
                     verification(client1, paramClient1[0], paramClient1[1].charAt(0));
@@ -428,8 +439,9 @@ public class Server extends Thread {
      * Function which manage an network error , when a player is disconnected
      * @param client
      */
-    public void networkError(CustomSocket client){
-        client.send(new NetworkMessage(ProtocolAction.OpponentDisconnected));
+    public void networkError(CustomSocket client, String existSavePath){
+        String[] param = {existSavePath};
+        client.send(new NetworkMessage(ProtocolAction.OpponentDisconnected, param));
     }
 
     /**
@@ -450,19 +462,22 @@ public class Server extends Thread {
      */
     public void safeQuit(CustomSocket client, String savename){
         quit(client);
-        client1 = null;
-        client2 = null;
         try {
             String path;
-            if(System.getProperty("os.name").toUpperCase().contains("WIN")){
-                path = System.getenv("APPDATA") + "/TicTacToe";
+            if(savePath != null){
+                path = savePath;
             }
             else{
-                path = System.getenv(("HOME")) + "/.tictactoe";
+                if(System.getProperty("os.name").toUpperCase().contains("WIN")){
+                    path = System.getenv("APPDATA") + "/TicTacToe";
+                }
+                else{
+                    path = System.getenv(("HOME")) + "/.tictactoe";
+                }
+                Files.createDirectories(Paths.get(path));
+                path += "/" + savename;
+                Files.createDirectories(Paths.get(path));
             }
-            Files.createDirectories(Paths.get(path));
-            path += "/" + savename;
-            Files.createDirectories(Paths.get(path));
 
             //Serialize the grid into json string
             Gson gson = new Gson();
