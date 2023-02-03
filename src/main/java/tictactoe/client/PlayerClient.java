@@ -28,7 +28,7 @@ public class PlayerClient extends Client{
     private final BufferedReader sysIn;
 
     /**
-     * Allow to know the last place
+     * Allow to store the position which is entered by the player
      */
     private String lastPosition = null;
 
@@ -76,6 +76,11 @@ public class PlayerClient extends Client{
         return new NetworkMessage(ProtocolAction.AnswerDimensions,param);
     }
 
+    /**
+     *The function manages the case of the restart of a game which was in paused
+     * @param saveList
+     * @return
+     */
     @Override
     public NetworkMessage resumeGame(String[] saveList) {
         System.out.println(Text.askSave(saveList));
@@ -279,6 +284,9 @@ public class PlayerClient extends Client{
         return new NetworkMessage(ProtocolAction.Quit, param);
     }
 
+    /**
+     * Function which show only the endgame message
+     */
     @Override
     public void quit() {
         System.out.println(Text.endGame());

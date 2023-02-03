@@ -91,11 +91,11 @@ public class Text implements  Displayable{
     }
 
     public static String saved(boolean saveSuccessful){
-        String out = ANSI_BLUE;
+        String out;
         if (saveSuccessful)
-            out += "Sauvegarde réalisée avec succès !";
+            out = ANSI_BLUE + "Sauvegarde réalisée avec succès !";
         else
-            out += "Echec de la sauvegarde.";
+            out = ANSI_RED + "Échec de la sauvegarde.";
         out += ANSI_RESET;
         return out;
     }
@@ -118,10 +118,10 @@ public class Text implements  Displayable{
     public static String askNetworkMode(){
         return ANSI_WHITE +
                 "\nVeuillez choisir votre mode de réseau pour jouer." +
-                "\n Disponible : 0 - Jeu en local (1vs1 ou 1vsIA)" +
-                "\n              1 - Hébergeur" +
-                "\n              2 - Client" +
-                "\n              3 - Serveur uniquement" +
+                "\n  0 - Jeu en local (1vs1 ou 1vsIA)" +
+                "\n  1 - Hébergeur" +
+                "\n  2 - Client" +
+                "\n  3 - Serveur uniquement" +
                 "\nVotre choix : "
                 + ANSI_RESET;
     }

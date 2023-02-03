@@ -325,6 +325,8 @@ public class Server extends Thread {
             param1[0] = "O";
             param2[0] = "X";
         }
+        param1[1] = "X";
+        param2[1] = "X";
 
         if(serializedGrid != null){
             String nextPlayer = (lastPlayer.equalsIgnoreCase("X") ? "O" : "X");
@@ -488,8 +490,9 @@ public class Server extends Thread {
             writer.write(json);
             writer.close();
 
-            System.out.println("Sauvegarde réalisée avec succès.");
+            System.out.println(Text.saved(true));
         } catch (IOException e) {
+            System.out.println(Text.saved(false));
             e.printStackTrace();
         }
     }

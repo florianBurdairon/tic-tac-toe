@@ -63,8 +63,6 @@ public class AIClient extends Client{
 
         if (nextPlayer.equals(this.role)){
             return play(null);
-        }else {
-            System.out.println(Text.otherStarts());
         }
         return new NetworkMessage(ProtocolAction.WaitMessage);
     }
