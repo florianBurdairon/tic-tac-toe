@@ -1,4 +1,8 @@
-# General informations
+# Tic Tac Toe
+
+## General informations
+
+![overview](img/overview.png)
 
 The game is a tic-tac-toe with possibility to choose the size and the dimension of the grid.
 
@@ -10,7 +14,7 @@ The game proposes multiple network mode :
 
 The game have a save functionnality build-in.
 
-# Requirements
+## Requirements
 
 - OS : Windows/Linux
 - Java version : 17.0.6
@@ -18,7 +22,7 @@ The game have a save functionnality build-in.
 
 Network configuration : use port 9876
 
-# Installation
+## Installation
 
 Clone git repository :
 
