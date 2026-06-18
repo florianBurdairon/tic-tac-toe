@@ -1,12 +1,10 @@
 package tictactoe.client;
 
 
-import com.google.gson.Gson;
 import tictactoe.network.NetworkMessage;
 import tictactoe.network.ProtocolAction;
 import tictactoe.Text;
 import tictactoe.grid.Grid2D;
-import tictactoe.grid.Grid3D;
 import tictactoe.grid.exceptions.PositionInvalidException;
 import tictactoe.grid.exceptions.PositionUsedException;
 
@@ -56,33 +54,9 @@ public class AIClient extends Client{
         return new NetworkMessage(ProtocolAction.NONE);
     }
 
-    /**
-     * Function on reception of "Start Game" by the server. Construct the adequate grid and get its role. If 'X', plays its turn.
-     * @param role The role given by the server ('X' or 'O').
-     * @param nextPlayer The next player
-     * @param dimension The dimension of the grid (2D or 3D).
-     * @param size The size of the grid (its width).
-     * @param serializedGrid The grid which is serialized.
-     * @return the message to answer to the server.
-     */
     @Override
-    public NetworkMessage startGame(String role, String nextPlayer, String dimension, String size, String serializedGrid) {
-        this.role = role;
-        if(serializedGrid != null) {
-            isSavedGame = true;
-
-            //Deserialize the json string
-            Gson gson = new Gson();
-            if(dimension.equals("3")) this.grid = gson.fromJson(serializedGrid, Grid3D.class);
-            else this.grid = gson.fromJson(serializedGrid, Grid2D.class);
-        }
-        else if(dimension.equals("3")) this.grid = new Grid3D(Integer.parseInt(size));
-        else this.grid = new Grid2D(Integer.parseInt(size));
-
-        if (nextPlayer.equals(this.role)){
-            return play(null);
-        }
-        return new NetworkMessage(ProtocolAction.WaitMessage);
+    protected void printOtherStarts() {
+        // Do nothing
     }
 
     /**
@@ -93,16 +67,7 @@ public class AIClient extends Client{
      */
     @Override
     public NetworkMessage play(String posOpponent) {
-        if(posOpponent!=null){
-            char opponentRole;
-            if(role.equals("X")) opponentRole = 'O';
-            else opponentRole = 'X';
-            try {
-                grid.place(posOpponent, opponentRole);
-            } catch (PositionUsedException | PositionInvalidException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        this.prePlay(posOpponent);
         System.out.println(Text.iaPlay(this.role));
 
         try {

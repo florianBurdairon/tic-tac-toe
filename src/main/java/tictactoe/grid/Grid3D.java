@@ -109,7 +109,7 @@ public class Grid3D implements Grid, Serializable {
             }
 
             for(int i = 0; i < this.size;i++){
-                out[i+1] += (out[i+1] != "" ? "\t" : "") + out2D[i];
+                out[i+1] += (!"".equals(out[i + 1]) ? "\t" : "") + out2D[i];
             }
         }
         //number of caracter needed for the bigest number
@@ -118,7 +118,7 @@ public class Grid3D implements Grid, Serializable {
         //midle is Size/2
         String space = " ".repeat(((log*this.size+this.size+1)/2));
         for(int i = 0; i < this.size;i++){
-            out[0] += (out[0] != "" ? "\t" : "") +space +"("+(char)(i+65)+")"+ space;
+            out[0] += (!"".equals(out[0]) ? "\t" : "") +space +"("+(char)(i+65)+")"+ space;
         }
         return out;
     }
